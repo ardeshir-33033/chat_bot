@@ -25,7 +25,7 @@ class ChatBotController extends GetxController {
     });
     Future.delayed(Duration(milliseconds: 2500), () {
       addMessages('عالیه، بریم سراغ ۵ تا سوال', fromUser: false);
-      // getWelcomeQuestion();
+      getWelcomeQuestion();
     });
   }
 
@@ -33,6 +33,7 @@ class ChatBotController extends GetxController {
     final res = await _getWelcomeQuestionUseCase.call(params: 1);
     if (res is DataSuccess<ChatBotMessage>) {
       chatBotMessages.add(res.data);
+      update();
     } else {
       print(res);
     }

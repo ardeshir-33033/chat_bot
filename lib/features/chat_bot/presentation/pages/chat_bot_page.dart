@@ -2,6 +2,7 @@ import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hesabo_chat_ai/di.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/chat_bot_top_header.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/chat_box.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/multi_select_question_widget.dart';
@@ -49,71 +50,16 @@ class _ChatBotPageState extends State<ChatBotPage> {
               child: Column(
                 children: [
                   SizedBox(height: 200, child: ChatBotTopHeader()),
+
                   Expanded(
-                    child: ListView(
-                      children: [
-                        MultiSelectQuestionWidget(
-                          question: "MultiSelectQuestionWidget",
-                          options: [
-                            ChatBotQuestionOptions(
-                              id: 1,
-                              welcomeQuestionId: 1,
-                              optionText: 'options',
-                            ),
-                            ChatBotQuestionOptions(
-                              id: 2,
-                              welcomeQuestionId: 2,
-                              optionText: 'options1',
-                            ),
-                            ChatBotQuestionOptions(
-                              id: 3,
-                              welcomeQuestionId: 3,
-                              optionText: 'options3',
-                            ),
-                          ],
-                          onSubmit: (val) {},
-                        ),
-                        SelectAndTypeQuestionWidget(
-                          question: "SelectAndTypeQuestionWidget",
-                          options: [
-                            SelectAndTypeOption(label: 'options'),
-                            SelectAndTypeOption(label: 'options2'),
-                            SelectAndTypeOption(label: 'options3'),
-                          ],
-                          onSubmit: (val) {},
-                        ),
-                        SingleSelectQuestionWidget(
-                          question: "SingleSelectQuestionWidget",
-                          options: ["options", "options2", "options3"],
-                          onSelected: (String) {},
-                        ),
-                        TextQuestionWidget(
-                          question: "TextQuestionWidget",
-                          hintText: "hintText",
-                          onSubmit: (String) {},
-                        ),
-                        YesNoQuestionWidget(
-                          question: "YesNoQuestionWidget",
-                          onAnswered: (val) {},
-                        ),
-                      ],
+                    child: ScrollablePositionedList.builder(
+                      itemCount: controller.chatBotMessages.length,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      itemScrollController: _itemScrollController,
+                      itemPositionsListener: _itemPositionsListener,
+                      itemBuilder: (_, index) {},
                     ),
                   ),
-
-                  // // Chat Box
-                  // Expanded(
-                  //   child: ScrollablePositionedList.builder(
-                  //     itemCount: controller.chatBotMessages.length,
-                  //     padding: const EdgeInsets.symmetric(vertical: 8),
-                  //     itemScrollController: _itemScrollController,
-                  //     itemPositionsListener: _itemPositionsListener,
-                  //     itemBuilder: (_, index) {
-                  //       return ChatBox(
-                  //         content: controller.chatBotMessages[index],
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
                   // Chat Bubble
                   // Positioned(
                   //   top: 220,
@@ -221,5 +167,13 @@ class _ChatBotPageState extends State<ChatBotPage> {
         },
       ),
     );
+  }
+
+  getChatBoxWidget(ChatBotMessage message) {
+    if (!message.isQuestion()) {
+      return ChatBox(content: message);
+    }else{
+
+    }
   }
 }

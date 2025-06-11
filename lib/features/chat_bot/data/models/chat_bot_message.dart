@@ -40,6 +40,10 @@ class ChatBotMessage {
           )
           .toList();
     }
+    final questionType = QuestionsApiData().getQuestionTypeFromSystemName(
+      json['system_name'],
+    );
+
     return ChatBotMessage(
       id: json['id'] as int,
       order: json['order'] as int,
@@ -47,6 +51,8 @@ class ChatBotMessage {
       systemQuestion: json['question_text'] as String,
       options: optionsList,
       systemName: json['system_name'] as String,
+      questionType: questionType,
+      createdAt: DateTime.now(),
     );
   }
 

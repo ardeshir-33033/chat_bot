@@ -29,7 +29,8 @@ class ChatDataSourceImpl extends ChatDataSource {
     required int step,
   }) async {
     var headers = {
-      'Cookie': 'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86'
+      'Cookie':
+          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86',
     };
     var dio = Dio();
     var response = await dio.request(
@@ -41,12 +42,14 @@ class ChatDataSourceImpl extends ChatDataSource {
     );
 
     if (response.statusCode == 200) {
+      final ss = ChatBotMessage.fromJson(response.data);
+      print(ss);
       final res = HttpResponse<ChatBotMessage>(
-        response.data,
+        ChatBotMessage.fromJson(response.data),
         Response(requestOptions: RequestOptions()),
       );
-      return res;    }
-    else {
+      return res;
+    } else {
       throw Exception(response.toString());
     }
     // final response1 = await apiHandler.get(
