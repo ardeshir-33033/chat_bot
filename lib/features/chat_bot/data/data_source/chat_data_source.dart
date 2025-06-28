@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:api_handler/api_handler.dart';
-import 'package:api_handler/feature/api_handler/data/models/query_model.dart';
-import 'package:api_handler/feature/api_handler/presentation/presentation_usecase.dart';
+// import 'package:api_handler/api_handler.dart';
+// import 'package:api_handler/feature/api_handler/data/models/query_model.dart';
+// import 'package:api_handler/feature/api_handler/presentation/presentation_usecase.dart';
 import 'package:dio/dio.dart';
 import 'package:hesabo_chat_ai/features/core/api_routing/chat_bot_routing.dart';
 import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
@@ -20,7 +20,7 @@ abstract class ChatDataSource {
 }
 
 class ChatDataSourceImpl extends ChatDataSource {
-  APIHandler apiHandler = APIHandler();
+  // APIHandler apiHandler = APIHandler();
 
   @override
   Future<HttpResponse<ChatBotMessage>> getWelcomeQuestion({

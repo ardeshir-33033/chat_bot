@@ -4,13 +4,23 @@ import 'package:hesabo_chat_ai/features/core/usecase/usecase.dart';
 
 import '../../../core/data/data_state.dart';
 
-class GetWelcomeQuestionUseCase implements UseCase<DataState<ChatBotMessage>, int> {
+class GetWelcomeQuestionUseCase
+    implements UseCase<DataState<ChatBotMessage>, GetWelcomeQuestionsParams> {
   final ChatBotRepository _chatBotRepository;
 
   GetWelcomeQuestionUseCase(this._chatBotRepository);
 
   @override
-  Future<DataState<ChatBotMessage>> call({required int params}) {
-    return _chatBotRepository.getWelcomeQuestion(order: 1, step: params);
+  Future<DataState<ChatBotMessage>> call(
+      {required GetWelcomeQuestionsParams params}) {
+    return _chatBotRepository.getWelcomeQuestion(
+        order: params.order, step: params.step);
   }
+}
+
+class GetWelcomeQuestionsParams {
+  int step;
+  int order;
+
+  GetWelcomeQuestionsParams({required this.order, required this.step});
 }

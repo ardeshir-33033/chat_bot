@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_question_options.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/question_title_widget.dart';
 
 class SingleSelectQuestionWidget extends StatelessWidget {
   final String question;
   final String? description;
-  final List<String> options;
+  final List<ChatBotQuestionOptions> options;
   final void Function(String) onSelected;
 
   const SingleSelectQuestionWidget({
@@ -39,12 +40,12 @@ class SingleSelectQuestionWidget extends StatelessWidget {
               child: Column(
                 children: List.generate(options.length, (index) {
                   return InkWell(
-                    onTap: () => onSelected(options[index]),
+                    onTap: () => onSelected(options[index].id.toString()),
                     borderRadius: index == 0
                         ? BorderRadius.vertical(top: Radius.circular(12))
                         : index == options.length - 1
-                        ? BorderRadius.vertical(bottom: Radius.circular(12))
-                        : BorderRadius.zero,
+                            ? BorderRadius.vertical(bottom: Radius.circular(12))
+                            : BorderRadius.zero,
                     child: Container(
                       width: double.infinity,
                       padding: EdgeInsets.symmetric(
@@ -55,15 +56,16 @@ class SingleSelectQuestionWidget extends StatelessWidget {
                         borderRadius: index == 0
                             ? BorderRadius.vertical(top: Radius.circular(12))
                             : index == options.length - 1
-                            ? BorderRadius.vertical(bottom: Radius.circular(12))
-                            : BorderRadius.zero,
+                                ? BorderRadius.vertical(
+                                    bottom: Radius.circular(12))
+                                : BorderRadius.zero,
                         color: Colors.transparent,
                       ),
                       child: Row(
                         children: [
                           Expanded(
                             child: Text(
-                              options[index],
+                              options[index].optionText,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,

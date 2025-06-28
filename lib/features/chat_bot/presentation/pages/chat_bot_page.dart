@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hesabo_chat_ai/di.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/questions_api_data.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/chat_bot_top_header.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/chat_box.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/multi_select_question_widget.dart';
@@ -57,7 +58,10 @@ class _ChatBotPageState extends State<ChatBotPage> {
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       itemScrollController: _itemScrollController,
                       itemPositionsListener: _itemPositionsListener,
-                      itemBuilder: (_, index) {},
+                      itemBuilder: (_, index) {
+                        return getChatBoxWidget(
+                            controller.chatBotMessages[index]);
+                      },
                     ),
                   ),
                   // Chat Bubble
@@ -172,8 +176,65 @@ class _ChatBotPageState extends State<ChatBotPage> {
   getChatBoxWidget(ChatBotMessage message) {
     if (!message.isQuestion()) {
       return ChatBox(content: message);
-    }else{
-
+    } else {
+      final result = message.questionType!;
+      switch (result) {
+        case QuestionType.text:
+          return TextQuestionWidget(
+            question: message.systemQuestion!,
+            hintText: '',
+            onSubmit: (value) {
+              controller.sendResponse(
+                QuestionType.text,
+                questionId: message.id,
+                textResponse: value,
+              );
+            },
+          );
+        case QuestionType.multiSelect:
+          return MultiSelectQuestionWidget(
+              question: message.systemQuestion!,
+              options: message.options!,
+              onSubmit: (val) {
+                controller.sendResponse(QuestionType.multiSelect,
+                    questionId: message.id,
+                    responses: val.map((element) => element.id).toList());
+              });
+        case QuestionType.selectAndType:
+          return SelectAndTypeQuestionWidget(
+              question: 'question',
+              options: message.options!,
+              onSubmit: (val) {
+                controller.sendResponse(
+                  QuestionType.selectAndType,
+                  questionId: message.id,
+                  // textResponse: value,
+                );
+              });
+        case QuestionType.singleSelect:
+          return SingleSelectQuestionWidget(
+            question: 'question',
+            options: message.options!,
+            onSelected: (value) {
+              controller.sendResponse(QuestionType.singleSelect,
+                  questionId: message.id, response: int.parse(value)
+                  // textResponse: value,
+                  );
+            },
+          );
+        case QuestionType.yesNo:
+          return YesNoQuestionWidget(
+            question: 'question',
+            onAnswered: (value) {
+              controller.sendResponse(
+                QuestionType.singleSelect,
+                questionId: message.id,
+                response: value ? 1 : 0,
+                // textResponse: value,
+              );
+            },
+          );
+      }
     }
   }
 }

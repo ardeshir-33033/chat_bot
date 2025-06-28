@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_question_options.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/question_title_widget.dart';
-
-class SelectAndTypeOption {
-  final String label;
-  final String? inputValue;
-
-  SelectAndTypeOption({required this.label, this.inputValue});
-}
 
 class SelectAndTypeQuestionWidget extends StatefulWidget {
   final String question;
   final String? description;
-  final List<SelectAndTypeOption> options;
+  final List<ChatBotQuestionOptions> options;
   final void Function(List<Map<String, String>>) onSubmit;
 
   const SelectAndTypeQuestionWidget({
@@ -80,7 +74,7 @@ class _SelectAndTypeQuestionWidgetState
                         title: Row(
                           children: [
                             Text(
-                              option.label,
+                              option.optionText,
                               style: TextStyle(color: Colors.white),
                             ),
                             Spacer(),
@@ -150,7 +144,7 @@ class _SelectAndTypeQuestionWidgetState
                               if (isChecked) {
                                 final option = widget.options[i];
                                 result.add({
-                                  'label': option.label,
+                                  'label': option.optionText,
                                   'value': (controllers[i]?.text ?? ''),
                                 });
                               }

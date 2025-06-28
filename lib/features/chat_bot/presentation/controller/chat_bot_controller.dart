@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart'
     show ChatBotMessage;
+import 'package:hesabo_chat_ai/features/chat_bot/data/questions_api_data.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/domain/usecase/get_welcome_question_usecase.dart';
 import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
 import 'package:hesabo_chat_ai/features/core/utils/utils.dart';
@@ -14,6 +15,9 @@ class ChatBotController extends GetxController {
 
   int userId = 1;
   int systemId = 0;
+
+  int currentOrder = 1;
+  int currentStep = 1;
 
   init() async {
     addMessages('سلام، من آماده ام که شروع کنم');
@@ -30,7 +34,9 @@ class ChatBotController extends GetxController {
   }
 
   Future getWelcomeQuestion() async {
-    final res = await _getWelcomeQuestionUseCase.call(params: 1);
+    final res = await _getWelcomeQuestionUseCase.call(
+        params:
+            GetWelcomeQuestionsParams(step: currentStep, order: currentOrder));
     if (res is DataSuccess<ChatBotMessage>) {
       chatBotMessages.add(res.data);
       update();
@@ -55,7 +61,36 @@ class ChatBotController extends GetxController {
     update();
   }
 
+  sendResponse(QuestionType questionType,
+      {int? questionId,
+      int? response,
+      String? textResponse,
+      List<int>? responses}) {
+    //TODO: send response through the
+    increaseStep();
+    getWelcomeQuestion();
+  }
+
+  increaseOrder() {
+    if (QuestionsApiData.totalOrders == currentOrder) {
+      //TODO: Navigate to next screen
+    } else {
+      currentOrder++;
+    }
+  }
+
+  increaseStep() {
+    if (QuestionsApiData.ordersTotalSteps[currentOrder] == currentStep) {
+      currentStep = 1;
+      increaseOrder();
+    } else {
+      currentStep++;
+    }
+  }
+
   resetData() {
     chatBotMessages = [];
+    currentOrder = 1;
+    currentStep = 1;
   }
 }
