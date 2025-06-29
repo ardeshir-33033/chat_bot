@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/domain/usecase/post_person_expectation_usecase.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/domain/usecase/post_user_response_usecase.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/controller/chat_bot_controller.dart';
 
 import 'features/chat_bot/data/data_source/chat_data_source.dart';
@@ -19,13 +21,21 @@ Future setup() async {
 
 void controllerInjection() {
   locator.registerSingleton<ChatBotController>(
-    Get.put(ChatBotController(locator())),
+    Get.put(ChatBotController(locator(), locator(), locator())),
   );
 }
 
 void useCaseInjection() {
   locator.registerLazySingleton<GetWelcomeQuestionUseCase>(
     () => GetWelcomeQuestionUseCase(locator()),
+  );
+
+  locator.registerLazySingleton<PostUserResponseUseCase>(
+    () => PostUserResponseUseCase(locator()),
+  );
+
+  locator.registerLazySingleton<PostPersonExpectationUseCase>(
+    () => PostPersonExpectationUseCase(locator()),
   );
 }
 

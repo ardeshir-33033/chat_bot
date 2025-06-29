@@ -30,8 +30,8 @@ class YesNoQuestionWidget extends StatelessWidget {
               question,
               style: TextStyle(
                 color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
               ),
               textAlign: TextAlign.center,
             ),

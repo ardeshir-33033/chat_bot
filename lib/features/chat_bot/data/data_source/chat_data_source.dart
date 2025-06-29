@@ -10,12 +10,22 @@ import 'package:hesabo_chat_ai/features/core/data/http_response.dart';
 import 'package:hesabo_chat_ai/features/core/env/environment.dart';
 
 import '../models/chat_bot_message.dart';
+import '../models/chatbot_answer_models/person_expectation_model.dart';
+import '../models/user_answer_model.dart';
 
 abstract class ChatDataSource {
   Future<HttpResponse<ChatBotMessage>> getWelcomeQuestion({
     bool? includeOptions = false,
     required order,
     required int step,
+  });
+
+  Future<HttpResponse<void>> postUserResponse({
+    required UserAnswerModel userAnswerModel,
+  });
+
+  Future<HttpResponse<void>> postPersonExpectation({
+    required PersonExpectationModel personExpectationModel,
   });
 }
 
@@ -24,7 +34,7 @@ class ChatDataSourceImpl extends ChatDataSource {
 
   @override
   Future<HttpResponse<ChatBotMessage>> getWelcomeQuestion({
-    bool? includeOptions = false,
+    bool? includeOptions = true,
     required order,
     required int step,
   }) async {
@@ -34,7 +44,7 @@ class ChatDataSourceImpl extends ChatDataSource {
     };
     var dio = Dio();
     var response = await dio.request(
-      'https://api.hesabodev.ir/chatbot/coreapi/welcome_questions/?include_options=true&order=1&step=1',
+      '${ChatBotRouting.getChatBotWelcomeQuestionRouting}/?include_options=true&order=$order&step=$step',
       options: Options(
         method: 'GET',
         // headers: headers,
@@ -42,10 +52,10 @@ class ChatDataSourceImpl extends ChatDataSource {
     );
 
     if (response.statusCode == 200) {
-      final ss = ChatBotMessage.fromJson(response.data);
-      print(ss);
+      final data = ChatBotMessage.fromJson(response.data);
+      print(data);
       final res = HttpResponse<ChatBotMessage>(
-        ChatBotMessage.fromJson(response.data),
+        data,
         Response(requestOptions: RequestOptions()),
       );
       return res;
@@ -72,5 +82,53 @@ class ChatDataSourceImpl extends ChatDataSource {
     // } else {
     //   throw Exception(response1.message.toString());
     // }
+  }
+
+  @override
+  Future<HttpResponse<void>> postUserResponse({
+    required UserAnswerModel userAnswerModel,
+  }) async {
+    var headers = {
+      'Cookie':
+          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86',
+    };
+    var dio = Dio();
+    var response = await dio.request(
+      ChatBotRouting.postUserResponse,
+      options: Options(method: 'POST', headers: headers),
+      data: jsonEncode(userAnswerModel.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      HttpResponse<void> voidResponse = HttpResponse(null, response);
+
+      return voidResponse;
+    } else {
+      throw Exception(response.toString());
+    }
+  }
+
+  @override
+  Future<HttpResponse<void>> postPersonExpectation({
+    required PersonExpectationModel personExpectationModel,
+  }) async {
+    var headers = {
+      'Cookie':
+          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86',
+    };
+    var dio = Dio();
+    var response = await dio.request(
+      ChatBotRouting.postPersonExpectation,
+      options: Options(method: 'POST', headers: headers),
+      data: jsonEncode(personExpectationModel.toJson()),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      HttpResponse<void> voidResponse = HttpResponse(null, response);
+
+      return voidResponse;
+    } else {
+      throw Exception(response.toString());
+    }
   }
 }

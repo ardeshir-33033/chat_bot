@@ -5,20 +5,20 @@ import 'chat_bot_question_options.dart';
 
 class ChatBotMessage {
   final int id;
-  final int order;
-  final int step;
-  final String? text;
+  final int? order;
+  final int? step;
+  String? text;
   final String systemName;
-  final String? userId;
+  String? userId;
   final String? systemQuestion;
   final DateTime? createdAt;
-  final List<ChatBotQuestionOptions>? options;
+  List<ChatBotQuestionOptions>? options;
   QuestionType? questionType;
 
   ChatBotMessage({
     required this.id,
-    required this.order,
-    required this.step,
+    this.order,
+    this.step,
     required this.systemName,
     this.text,
     this.systemQuestion,
@@ -68,11 +68,6 @@ class ChatBotMessage {
   }
 
   @override
-  String toString() {
-    return 'QuestionStep(id: $id, order: $order, step: $step, questionText: "$text", systemName: "$systemName")';
-  }
-
-  @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
@@ -86,6 +81,14 @@ class ChatBotMessage {
 
   bool isQuestion() {
     if (options != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool isAnswer() {
+    if (systemQuestion != null && options == null && text != null) {
       return true;
     } else {
       return false;

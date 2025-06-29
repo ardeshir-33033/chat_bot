@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hesabo_chat_ai/di.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/chatbot_answer_models/person_expectation_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/questions_api_data.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/answer_box.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/chat_bot_top_header.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/chat_box.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/multi_select_question_widget.dart';
@@ -12,10 +16,13 @@ import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/single_sel
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/yes_no_question_widget.dart';
 import 'package:hesabo_chat_ai/features/core/components/app_header_bar.dart';
 import 'package:hesabo_chat_ai/features/core/components/icon_widget.dart';
+import 'package:hesabo_chat_ai/features/core/data/resalat_test.dart';
 import 'package:hesabo_chat_ai/features/core/theme/constants.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:serious_python/serious_python.dart';
 
 import '../../data/models/chat_bot_question_options.dart';
+import '../../data/models/chatbot_answer_models/welcome_question_answer_model.dart';
 import '../controller/chat_bot_controller.dart';
 import '../widgets/text_question_widget.dart';
 
@@ -27,17 +34,79 @@ class ChatBotPage extends StatefulWidget {
 }
 
 class _ChatBotPageState extends State<ChatBotPage> {
-  final ItemScrollController _itemScrollController = ItemScrollController();
-  final ItemPositionsListener _itemPositionsListener =
-      ItemPositionsListener.create();
-
   ChatBotController controller = locator<ChatBotController>();
 
   @override
   void initState() {
+    controller.itemScrollController = ItemScrollController();
+    controller.itemPositionsListener = ItemPositionsListener.create();
     controller.init();
+    test();
     super.initState();
   }
+
+  test() async {
+    final ss = ResalatSmsParser.parseResalatSms(exampleSms1);
+    print(ss);
+    final ss2 = ResalatSmsParser.parseResalatSms(exampleSms2);
+    print(ss2);
+  }
+
+  final String exampleSms1 = """
+خرید
+از: فروشگاه مواد غذایی
+کارت: 1234
+-15,000
+مانده: 1,000,000
+1404/06/25-10:30:15
+12345.678.901
+""";
+
+  final String exampleSms2 = """
+10.11668816.1
+-40,000,000 
+01/07_18:24
+مانده: 217,000,104 
+""";
+
+  // Future<void> _parseSms() async {
+  //   // setState(() {
+  //   //   _pythonResult = "Parsing...";
+  //   // });
+  //
+  //   try {
+  //     final String smsTextToSend = exampleSms1;
+  //
+  //     // Call SeriousPython.run with the correct asset path and arguments
+  //     final String? resultString = await SeriousPython.run(
+  //       "app/python_code.zip",
+  //       pythonArgs: [smsTextToSend], // Use 'pythonArgs' instead of 'arguments'
+  //
+  //       sync:
+  //           true,
+  //
+  //     );
+  //
+  //     if (resultString != null && resultString.isNotEmpty) {
+  //       // Decode the JSON string received from Python
+  //       final Map<String, dynamic> pythonOutput = json.decode(resultString);
+  //       final _pythonResult = const JsonEncoder.withIndent(
+  //         '  ',
+  //       ).convert(pythonOutput);
+  //       print(_pythonResult);
+  //     } else {
+  //       // setState(() {
+  //       //   _pythonResult =
+  //       //       "Python script returned no output or an empty string.";
+  //       // });
+  //     }
+  //   } catch (e) {
+  //     // setState(() {
+  //     //   _pythonResult = "Error running Python: $e";
+  //     // });
+  //     print("Python error details: $e"); // Print error to console for debugging
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -51,16 +120,17 @@ class _ChatBotPageState extends State<ChatBotPage> {
               child: Column(
                 children: [
                   SizedBox(height: 200, child: ChatBotTopHeader()),
-
                   Expanded(
                     child: ScrollablePositionedList.builder(
                       itemCount: controller.chatBotMessages.length,
                       padding: const EdgeInsets.symmetric(vertical: 8),
-                      itemScrollController: _itemScrollController,
-                      itemPositionsListener: _itemPositionsListener,
+                      itemScrollController: controller.itemScrollController,
+                      itemPositionsListener: controller.itemPositionsListener,
                       itemBuilder: (_, index) {
                         return getChatBoxWidget(
-                            controller.chatBotMessages[index]);
+                          controller.chatBotMessages[index],
+                          index,
+                        );
                       },
                     ),
                   ),
@@ -173,8 +243,11 @@ class _ChatBotPageState extends State<ChatBotPage> {
     );
   }
 
-  getChatBoxWidget(ChatBotMessage message) {
+  getChatBoxWidget(ChatBotMessage message, int index) {
     if (!message.isQuestion()) {
+      if (message.isAnswer()) {
+        return AnswerBox(content: message);
+      }
       return ChatBox(content: message);
     } else {
       final result = message.questionType!;
@@ -183,58 +256,145 @@ class _ChatBotPageState extends State<ChatBotPage> {
           return TextQuestionWidget(
             question: message.systemQuestion!,
             hintText: '',
-            onSubmit: (value) {
-              controller.sendResponse(
-                QuestionType.text,
-                questionId: message.id,
-                textResponse: value,
+            onSubmit: (value) async {
+              if (value.isEmpty) return;
+              dynamic model = prepareAnswerData(message, value);
+              bool val = await controller.handleAnswer(
+                message,
+                model,
+                // QuestionType.text,
+                // questionId: message.id,
+                // textResponse: value,
               );
+              if (val) {
+                controller.transformQuestionToMessage(index, [value]);
+              }
             },
           );
         case QuestionType.multiSelect:
           return MultiSelectQuestionWidget(
-              question: message.systemQuestion!,
-              options: message.options!,
-              onSubmit: (val) {
-                controller.sendResponse(QuestionType.multiSelect,
-                    questionId: message.id,
-                    responses: val.map((element) => element.id).toList());
-              });
+            question: message.systemQuestion!,
+            options: message.options!,
+            onSubmit: (value) async {
+              if (value.isEmpty) return;
+
+              dynamic model = prepareAnswerData(
+                message,
+                value.map((element) => element.id).toList(),
+              );
+
+              bool val = await controller.handleAnswer(
+                message,
+                model,
+                // QuestionType.multiSelect,
+                // questionId: message.id,
+                // selectedOptionIds: value.map((element) => element.id).toList(),
+              );
+              if (val) {
+                controller.transformQuestionToMessage(
+                  index,
+                  value.map((element) => element.optionText).toList(),
+                );
+              }
+            },
+          );
         case QuestionType.selectAndType:
           return SelectAndTypeQuestionWidget(
-              question: 'question',
-              options: message.options!,
-              onSubmit: (val) {
-                controller.sendResponse(
-                  QuestionType.selectAndType,
-                  questionId: message.id,
-                  // textResponse: value,
-                );
-              });
+            question: message.systemQuestion!,
+            options: message.options!,
+            onSubmit: (value) {
+              if (value.isEmpty) return;
+
+              // dynamic model = prepareAnswerData(
+              //   message,
+              //   value.map((element) => element.id).toList(),
+              // );
+              // controller.sendResponse(
+              //   QuestionType.selectAndType,
+              //   questionId: message.id,
+              //   // textResponse: value,
+              // );
+            },
+          );
         case QuestionType.singleSelect:
           return SingleSelectQuestionWidget(
-            question: 'question',
+            question: message.systemQuestion!,
             options: message.options!,
-            onSelected: (value) {
-              controller.sendResponse(QuestionType.singleSelect,
-                  questionId: message.id, response: int.parse(value)
-                  // textResponse: value,
-                  );
+            onSelected: (value) async {
+              if (value.isEmpty) return;
+
+              // final val = await controller.sendResponse(
+              //   QuestionType.singleSelect,
+              //   questionId: message.id,
+              //   selectedOptionIds: [int.parse(value)],
+              //   // textResponse: value,
+              // );
+              // if (val) {
+              //   controller.transformQuestionToMessage(index, [value]);
+              // }
             },
           );
         case QuestionType.yesNo:
           return YesNoQuestionWidget(
-            question: 'question',
-            onAnswered: (value) {
-              controller.sendResponse(
-                QuestionType.singleSelect,
-                questionId: message.id,
-                response: value ? 1 : 0,
-                // textResponse: value,
-              );
+            question: message.systemQuestion!,
+            onAnswered: (value) async {
+              dynamic model = prepareAnswerData(message, value);
+
+              bool val = await controller.handleAnswer(message, model);
+              if (val) {
+                controller.transformQuestionToMessage(
+                  index,
+                  value ? ["بله"] : ["خیر"],
+                );
+              }
             },
           );
       }
+    }
+  }
+
+  dynamic prepareAnswerData(ChatBotMessage message, dynamic rawAnswer) {
+    switch (message.systemName) {
+      case "has_fix_income":
+      case "user_goal":
+        return WelcomeQuestionAnswerModel(
+          questionId: message.id,
+          selectedOptionIds: rawAnswer,
+        );
+      case "fix_income_type":
+        return WelcomeQuestionAnswerModel(
+          questionId: message.id,
+          selectedOptionIds: rawAnswer,
+        );
+
+      // case "has_expense_categories":
+      //   return List<int>.from(rawAnswer);
+      //
+      case "debt":
+        if ((rawAnswer as List<int>) != [10]) {
+          controller.postPersonExpectation(
+            PersonExpectationModel(personId: controller.userId, hasDebt: true),
+          );
+        }
+        return WelcomeQuestionAnswerModel(
+          questionId: message.id,
+          selectedOptionIds: rawAnswer,
+        );
+
+      case "income_amount":
+        return PersonExpectationModel(
+          avgIncome: int.parse(rawAnswer),
+          personId: controller.userId,
+        );
+
+      case "sms_bank_permission":
+        return rawAnswer;
+
+      // case "fix_income_list":
+      //   return FixIncomeListModel(items: List<IncomeItem>.from(rawAnswer));
+
+      default:
+        return rawAnswer;
     }
   }
 }
