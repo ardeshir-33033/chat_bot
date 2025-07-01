@@ -4,6 +4,7 @@ import 'package:hesabo_chat_ai/features/chat_bot/domain/repository/chat_bot_repo
 import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
 
 import '../data_source/chat_data_source.dart';
+import '../models/chat_agent_models/chat_agent_request.dart';
 import '../models/user_answer_model.dart';
 
 class ChatBotRepositoryImpl extends ChatBotRepository {
@@ -41,6 +42,26 @@ class ChatBotRepositoryImpl extends ChatBotRepository {
     try {
       final response = await _chatDataSource.postUserResponse(
         userAnswerModel: userAnswerModel,
+      );
+
+      return DataSuccess(response.data);
+    } on Exception catch (e) {
+      // if (e.error is ApiError) {
+      return DataFailed(e.toString());
+      // } else {
+      //   e.errLog();
+      // return const DataFailed('Error, try again');
+      // }
+    }
+  }
+
+  @override
+  Future<DataState<ChatBotMessage>> postAgentInteraction({
+    required ChatAgentRequest chatAgentRequest,
+  }) async {
+    try {
+      final response = await _chatDataSource.postAgentInteraction(
+        chatAgentRequest: chatAgentRequest,
       );
 
       return DataSuccess(response.data);

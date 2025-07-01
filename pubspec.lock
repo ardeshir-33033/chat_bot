@@ -10,14 +10,6 @@ packages:
       url: "https://github.com/ardeshir-33033/api_helper.git"
     source: git
     version: "1.2.0"
-  archive:
-    dependency: transitive
-    description:
-      name: archive
-      sha256: cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.6.1"
   args:
     dependency: transitive
     description:
@@ -220,6 +212,11 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_web_plugins:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   get:
     dependency: "direct main"
     description:
@@ -236,14 +233,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "8.0.3"
-  glob:
-    dependency: transitive
-    description:
-      name: glob
-      sha256: c3f1ee72c96f8f78935e18aa8cecced9ab132419e8625dc187e1c2408efc20de
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.3"
   http:
     dependency: transitive
     description:
@@ -400,42 +389,50 @@ packages:
     dependency: "direct main"
     description:
       name: permission_handler
-      sha256: bc56bfe9d3f44c3c612d8d393bd9b174eb796d706759f9b495ac254e4294baa5
+      sha256: "2d070d8684b68efb580a5997eb62f675e8a885ef0be6e754fb9ef489c177470f"
       url: "https://pub.dev"
     source: hosted
-    version: "10.4.5"
+    version: "12.0.0+1"
   permission_handler_android:
     dependency: transitive
     description:
       name: permission_handler_android
-      sha256: "59c6322171c29df93a22d150ad95f3aa19ed86542eaec409ab2691b8f35f9a47"
+      sha256: "1e3bc410ca1bf84662104b100eb126e066cb55791b7451307f9708d4007350e6"
       url: "https://pub.dev"
     source: hosted
-    version: "10.3.6"
+    version: "13.0.1"
   permission_handler_apple:
     dependency: transitive
     description:
       name: permission_handler_apple
-      sha256: "99e220bce3f8877c78e4ace901082fb29fa1b4ebde529ad0932d8d664b34f3f5"
+      sha256: f000131e755c54cf4d84a5d8bd6e4149e262cc31c5a8b1d698de1ac85fa41023
       url: "https://pub.dev"
     source: hosted
-    version: "9.1.4"
+    version: "9.4.7"
+  permission_handler_html:
+    dependency: transitive
+    description:
+      name: permission_handler_html
+      sha256: "38f000e83355abb3392140f6bc3030660cfaef189e1f87824facb76300b4ff24"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.3+5"
   permission_handler_platform_interface:
     dependency: transitive
     description:
       name: permission_handler_platform_interface
-      sha256: "6760eb5ef34589224771010805bea6054ad28453906936f843a8cc4d3a55c4a4"
+      sha256: eb99b295153abce5d683cac8c02e22faab63e50679b937fa1bf67d58bb282878
       url: "https://pub.dev"
     source: hosted
-    version: "3.12.0"
+    version: "4.3.0"
   permission_handler_windows:
     dependency: transitive
     description:
       name: permission_handler_windows
-      sha256: cc074aace208760f1eee6aa4fae766b45d947df85bc831cde77009cdb4720098
+      sha256: "1a790728016f79a41216d88672dbc5df30e686e811ad4e698bfc51f76ad91f1e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.3"
+    version: "0.2.1"
   petitparser:
     dependency: transitive
     description:
@@ -484,62 +481,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.8"
-  serious_python:
+  shamsi_date:
     dependency: "direct main"
     description:
-      name: serious_python
-      sha256: a52425626dcf960b246b13314cbc7697efb8e5e76eeec35648833e605f47fb6b
+      name: shamsi_date
+      sha256: b6c79ff34ddfb1e9e4761347f18e30afdd7d16cc3db77defd5a40e2d93894c51
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.2"
-  serious_python_android:
-    dependency: transitive
-    description:
-      name: serious_python_android
-      sha256: b9a2a51a803af511397f7d56f405f46dbbeac6a7a8a19c1675861f589a0f5a02
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.9.2"
-  serious_python_darwin:
-    dependency: transitive
-    description:
-      name: serious_python_darwin
-      sha256: "16a1d6dc7f52f9263702e3b6e9ed3480925ffd054dea3d96ed31c2be91050c0d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.9.2"
-  serious_python_linux:
-    dependency: transitive
-    description:
-      name: serious_python_linux
-      sha256: f403964176a3a8641b78da23f3a26c57626ad43c05c31a763378aca0cb1c887f
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.9.2"
-  serious_python_platform_interface:
-    dependency: transitive
-    description:
-      name: serious_python_platform_interface
-      sha256: de4a52c16700e7736b4bcf8ad93fd3ff5ffd5a99fefa279e8e65349c1b432c41
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.9.2"
-  serious_python_windows:
-    dependency: transitive
-    description:
-      name: serious_python_windows
-      sha256: a2aa4d9a7934f7bfea002b0b6a858c1341c280110b23aeed332a6864e97d15c1
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.9.2"
-  shelf:
-    dependency: transitive
-    description:
-      name: shelf
-      sha256: e7dd780a7ffb623c57850b33f43309312fc863fb6aa3d276a754bb299839ef12
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.2"
+    version: "1.1.0"
   skeleton_text:
     dependency: "direct main"
     description:
@@ -657,14 +606,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.4"
-  toml:
-    dependency: transitive
-    description:
-      name: toml
-      sha256: "9968de24e45b632bf1a654fe1ac7b6fe5261c349243df83fd262397799c45a2d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.15.0"
   typed_data:
     dependency: transitive
     description:
