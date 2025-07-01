@@ -73,70 +73,89 @@ class ChatBoxState extends State<ChatBox> {
         builder: (context) {
           return Padding(
             padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-            child: Row(
-              textDirection: isMine ? TextDirection.rtl : TextDirection.ltr,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: isMine ? Color(0xFF25405B) : Color(0xFF202438),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                      bottomLeft: isMine
-                          ? Radius.circular(20)
-                          : Radius.circular(0),
-                      bottomRight: isMine
-                          ? Radius.circular(0)
-                          : Radius.circular(20),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.7,
+              ),
+              child: Row(
+                textDirection: isMine ? TextDirection.rtl : TextDirection.ltr,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: isMine ? Color(0xFF25405B) : Color(0xFF202438),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                        bottomLeft: isMine
+                            ? Radius.circular(20)
+                            : Radius.circular(0),
+                        bottomRight: isMine
+                            ? Radius.circular(0)
+                            : Radius.circular(20),
+                      ),
                     ),
-                  ),
-                  child: Row(
-                    textDirection: isMine
-                        ? TextDirection.rtl
-                        : TextDirection.ltr,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                isMine ? 'شما' : 'دستیار هوشمند',
-                                style: context.textTheme.bodyMedium!.copyWith(
+                    child: Row(
+                      textDirection: isMine
+                          ? TextDirection.rtl
+                          : TextDirection.ltr,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  isMine ? 'شما' : 'دستیار هوشمند',
+                                  style: context.textTheme.bodyMedium!.copyWith(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Icon(
+                                  Icons.person,
                                   color: Colors.white,
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.7,
+                              ),
+                              child: Text(
+                                isMine
+                                    ? widget.content.text!
+                                    : widget.content.systemQuestion!,
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
                                 ),
                               ),
-                              SizedBox(width: 8),
-                              Icon(Icons.person, color: Colors.white, size: 20),
-                            ],
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            isMine
-                                ? widget.content.text!
-                                : widget.content.systemQuestion!,
-                            style: TextStyle(color: Colors.white, fontSize: 16),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            widget.content.createdAt!.toHourMinute24(),
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            SizedBox(height: 8),
+                            Text(
+                              widget.content.createdAt!.toHourMinute24(),
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

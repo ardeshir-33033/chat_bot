@@ -4,11 +4,13 @@ import 'dart:convert';
 // import 'package:api_handler/feature/api_handler/data/models/query_model.dart';
 // import 'package:api_handler/feature/api_handler/presentation/presentation_usecase.dart';
 import 'package:dio/dio.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_agent_models/chat_agent_answer.dart';
 import 'package:hesabo_chat_ai/features/core/api_routing/chat_bot_routing.dart';
 import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
 import 'package:hesabo_chat_ai/features/core/data/http_response.dart';
 import 'package:hesabo_chat_ai/features/core/env/environment.dart';
 
+import '../models/chat_agent_models/chat_agent_request.dart';
 import '../models/chat_bot_message.dart';
 import '../models/chatbot_answer_models/person_expectation_model.dart';
 import '../models/user_answer_model.dart';
@@ -26,6 +28,10 @@ abstract class ChatDataSource {
 
   Future<HttpResponse<void>> postPersonExpectation({
     required PersonExpectationModel personExpectationModel,
+  });
+
+  Future<HttpResponse<ChatBotMessage>> postAgentInteraction({
+    required ChatAgentRequest chatAgentRequest,
   });
 }
 
@@ -82,6 +88,39 @@ class ChatDataSourceImpl extends ChatDataSource {
     // } else {
     //   throw Exception(response1.message.toString());
     // }
+  }
+
+  @override
+  Future<HttpResponse<ChatBotMessage>> postAgentInteraction({
+    required ChatAgentRequest chatAgentRequest,
+  }) async {
+    var headers = {
+      'Content-Type': 'application/json',
+      'Cookie':
+          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90878D86',
+    };
+    var dio = Dio();
+    var response = await dio.request(
+      // ChatBotRouting.postAgentInteraction,
+      "https://api.hesabodev.ir/chatbot/agents/interact/",
+      data: jsonEncode(chatAgentRequest.toJson()),
+
+      options: Options(method: 'POST', headers: headers),
+    );
+
+    if (response.statusCode == 200) {
+      final data = ChatAgentResponse.fromJson(response.data);
+      print(data);
+      ChatBotMessage message = data.convertToChatBoMessage();
+
+      final res = HttpResponse<ChatBotMessage>(
+        message,
+        Response(requestOptions: RequestOptions()),
+      );
+      return res;
+    } else {
+      throw Exception(response.toString());
+    }
   }
 
   @override
