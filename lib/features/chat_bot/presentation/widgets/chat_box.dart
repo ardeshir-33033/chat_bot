@@ -126,7 +126,7 @@ class ChatBoxState extends State<ChatBox> {
                               ],
                             ),
                             SizedBox(height: 8),
-                            if (!isMine)
+                            if (widget.content.fromAgent)
                               Directionality(
                                 textDirection: TextDirection.rtl,
                                 child: ConstrainedBox(
@@ -136,15 +136,25 @@ class ChatBoxState extends State<ChatBox> {
                                   ),
                                   child: Html(
                                     data: widget.content.systemQuestion!,
-                                    // You can customize styling here if needed
-                                    // style: {
-                                    //   "body": Style(fontSize: FontSize(16.0)),
-                                    //   "p": Style(margin: Margins.zero()),
-                                    // },
+                                    style: {
+                                      // Apply style to the 'body' tag (most general)
+                                      "body": Style(
+                                        fontSize: FontSize(
+                                          16.0,
+                                        ), // Set your desired font size here (e.g., 20.0, 22.0, etc.)
+                                        // You can also add other styles like fontWeight, color, etc.
+                                        // fontWeight: FontWeight.bold,
+                                        // color: Colors.blue,
+                                      ),
+                                      // Or apply to 'p' tags if you only want paragraphs to be larger
+                                      // "p": Style(
+                                      //   fontSize: FontSize(18.0),
+                                      // ),
+                                    },
                                   ),
                                 ),
                               ),
-                            if (isMine)
+                            if (!widget.content.fromAgent)
                               ConstrainedBox(
                                 constraints: BoxConstraints(
                                   maxWidth:

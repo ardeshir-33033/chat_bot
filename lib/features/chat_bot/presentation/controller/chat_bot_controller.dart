@@ -94,13 +94,14 @@ class ChatBotController extends GetxController {
     print(res);
   }
 
-  addMessages(String message, {bool fromUser = true}) {
+  addMessages(String message, {bool fromUser = true, bool fromAgent = false}) {
     ChatBotMessage chatBotMessage = ChatBotMessage(
       id: getRandomNumber(),
       text: fromUser ? message : null,
       systemQuestion: fromUser ? null : message,
       systemName: message,
       userId: fromUser ? userId.toString() : systemId.toString(),
+      fromAgent: fromAgent,
       createdAt: DateTime.now(),
     );
     chatBotMessages.add(chatBotMessage);
@@ -138,7 +139,7 @@ class ChatBotController extends GetxController {
     );
 
     if (res is DataSuccess<ChatBotMessage>) {
-      addMessages(res.data.text!, fromUser: false);
+      addMessages(res.data.text!, fromUser: false, fromAgent: true);
     }
   }
 

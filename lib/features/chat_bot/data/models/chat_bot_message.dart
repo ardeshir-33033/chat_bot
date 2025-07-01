@@ -12,6 +12,7 @@ class ChatBotMessage {
   String? userId;
   final String? systemQuestion;
   final DateTime? createdAt;
+  bool fromAgent;
   List<ChatBotQuestionOptions>? options;
   QuestionType? questionType;
 
@@ -23,6 +24,7 @@ class ChatBotMessage {
     this.text,
     this.systemQuestion,
     this.userId,
+    this.fromAgent = false,
     this.createdAt,
     this.options,
     this.questionType,
