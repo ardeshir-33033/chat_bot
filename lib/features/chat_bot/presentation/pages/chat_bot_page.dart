@@ -177,6 +177,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
                                         color: Colors.white70,
                                         fontSize: 16,
                                       ),
+                                      hintTextDirection: TextDirection.rtl,
                                       contentPadding: EdgeInsets.symmetric(
                                         horizontal: 16,
                                         vertical: 12,

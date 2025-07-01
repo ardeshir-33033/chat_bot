@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:hesabo_chat_ai/di.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/controller/chat_bot_controller.dart';
@@ -125,22 +126,41 @@ class ChatBoxState extends State<ChatBox> {
                               ],
                             ),
                             SizedBox(height: 8),
-                            ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth:
-                                    MediaQuery.of(context).size.width * 0.7,
-                              ),
-                              child: Text(
-                                isMine
-                                    ? widget.content.text!
-                                    : widget.content.systemQuestion!,
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
+                            if (!isMine)
+                              Directionality(
+                                textDirection: TextDirection.rtl,
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width * 0.7,
+                                  ),
+                                  child: Html(
+                                    data: widget.content.systemQuestion!,
+                                    // You can customize styling here if needed
+                                    // style: {
+                                    //   "body": Style(fontSize: FontSize(16.0)),
+                                    //   "p": Style(margin: Margins.zero()),
+                                    // },
+                                  ),
                                 ),
                               ),
-                            ),
+                            if (isMine)
+                              ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width * 0.7,
+                                ),
+                                child: Text(
+                                  isMine
+                                      ? widget.content.text!
+                                      : widget.content.systemQuestion!,
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
                             SizedBox(height: 8),
                             Text(
                               widget.content.createdAt!.toHourMinute24(),
