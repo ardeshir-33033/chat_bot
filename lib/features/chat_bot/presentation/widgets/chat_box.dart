@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:hesabo_chat_ai/di.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/controller/chat_bot_controller.dart';
@@ -127,31 +128,15 @@ class ChatBoxState extends State<ChatBox> {
                             ),
                             SizedBox(height: 8),
                             if (widget.content.fromAgent)
-                              Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxWidth:
-                                        MediaQuery.of(context).size.width * 0.7,
-                                  ),
-                                  child: Html(
-                                    data: widget.content.systemQuestion!,
-                                    style: {
-                                      // Apply style to the 'body' tag (most general)
-                                      "body": Style(
-                                        fontSize: FontSize(
-                                          16.0,
-                                        ), // Set your desired font size here (e.g., 20.0, 22.0, etc.)
-                                        // You can also add other styles like fontWeight, color, etc.
-                                        // fontWeight: FontWeight.bold,
-                                        // color: Colors.blue,
-                                      ),
-                                      // Or apply to 'p' tags if you only want paragraphs to be larger
-                                      // "p": Style(
-                                      //   fontSize: FontSize(18.0),
-                                      // ),
-                                    },
-                                  ),
+                              ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width * 0.7,
+                                ),
+                                child: GptMarkdown(
+                                  widget.content.systemQuestion!,
+                                  style: TextStyle(fontSize: 14.0),
+                                  textDirection: TextDirection.rtl,
                                 ),
                               ),
                             if (!widget.content.fromAgent)
@@ -167,7 +152,7 @@ class ChatBoxState extends State<ChatBox> {
                                   textAlign: TextAlign.right,
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 16,
+                                    fontSize: 14,
                                   ),
                                 ),
                               ),
