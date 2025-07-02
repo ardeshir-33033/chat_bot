@@ -10,6 +10,7 @@ import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
 import 'package:hesabo_chat_ai/features/core/data/http_response.dart';
 import 'package:hesabo_chat_ai/features/core/env/environment.dart';
 
+import '../models/bank_account_model.dart';
 import '../models/chat_agent_models/chat_agent_request.dart';
 import '../models/chat_bot_message.dart';
 import '../models/chatbot_answer_models/person_expectation_model.dart';
@@ -32,6 +33,10 @@ abstract class ChatDataSource {
 
   Future<HttpResponse<ChatBotMessage>> postAgentInteraction({
     required ChatAgentRequest chatAgentRequest,
+  });
+
+  Future<HttpResponse<BankAccount>> postBankAccount({
+    required BankAccount bankAccount,
   });
 }
 
@@ -164,6 +169,32 @@ class ChatDataSourceImpl extends ChatDataSource {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       HttpResponse<void> voidResponse = HttpResponse(null, response);
+
+      return voidResponse;
+    } else {
+      throw Exception(response.toString());
+    }
+  }
+
+  @override
+  Future<HttpResponse<BankAccount>> postBankAccount({
+    required BankAccount bankAccount,
+  }) async {
+    var headers = {
+      'Cookie':
+          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86',
+    };
+    var dio = Dio();
+    var response = await dio.request(
+      ChatBotRouting.postPersonExpectation,
+      options: Options(method: 'POST', headers: headers),
+      data: jsonEncode(bankAccount.toJson()),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final data = BankAccount.fromJson(response.data);
+
+      HttpResponse<BankAccount> voidResponse = HttpResponse(data, response);
 
       return voidResponse;
     } else {

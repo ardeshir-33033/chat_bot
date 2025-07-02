@@ -1,3 +1,4 @@
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/bank_account_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chatbot_answer_models/person_expectation_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/domain/repository/chat_bot_repository.dart';
@@ -88,5 +89,21 @@ class ChatBotRepositoryImpl extends ChatBotRepository {
     } on Exception catch (e) {
       return DataFailed(e.toString());
     }
+  }
+
+  @override
+  Future<DataState<BankAccount>> postBankAccount({
+    required BankAccount bankAccount,
+  })async{
+    try {
+      final response = await _chatDataSource.postBankAccount(
+        bankAccount: bankAccount,
+      );
+
+      return DataSuccess(response.data);
+    } on Exception catch (e) {
+      return DataFailed(e.toString());
+    }
+
   }
 }

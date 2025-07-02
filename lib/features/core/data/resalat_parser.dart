@@ -113,7 +113,7 @@ class ResalatSmsParser {
       if (line.contains("مانده:")) {
         List<String> parts = line.split("مانده:");
         if (parts.length > 1) {
-          String balanceStr = parts[1].split(' ')[0].replaceAll(',', '');
+          String balanceStr = parts[1].split(' ')[1].replaceAll(',', '');
           try {
             balance = int.parse(balanceStr);
           } catch (e) {

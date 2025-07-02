@@ -2,6 +2,7 @@ import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.da
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/user_answer_model.dart';
 import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
 
+import '../../data/models/bank_account_model.dart';
 import '../../data/models/chat_agent_models/chat_agent_request.dart';
 import '../../data/models/chatbot_answer_models/person_expectation_model.dart';
 
@@ -22,5 +23,9 @@ abstract class ChatBotRepository {
 
   Future<DataState<void>> postPersonExpectation({
     required PersonExpectationModel personExpectation,
+  });
+
+  Future<DataState<BankAccount>> postBankAccount({
+    required BankAccount bankAccount,
   });
 }

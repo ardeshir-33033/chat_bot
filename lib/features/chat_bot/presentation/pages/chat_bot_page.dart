@@ -31,6 +31,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../../data/models/chat_bot_question_options.dart';
 import '../../data/models/chatbot_answer_models/welcome_question_answer_model.dart';
 import '../controller/chat_bot_controller.dart';
+import '../widgets/bank_sms_multi_select_widget.dart';
 import '../widgets/text_question_widget.dart';
 
 class ChatBotPage extends StatefulWidget {
@@ -50,12 +51,13 @@ class _ChatBotPageState extends State<ChatBotPage> {
     controller.itemScrollController = ItemScrollController();
     controller.itemPositionsListener = ItemPositionsListener.create();
     // controller.init();
-    // test();
+    test();
     super.initState();
   }
 
   test() async {
-    controller.processLastBankSms();
+    await controller.processLastBankSms();
+    await controller.getBankAccountOptions();
     // final ss = AyandehSmsParser.parseAyandehSms(exampleSms1);
     // print(ss);
 
@@ -329,6 +331,13 @@ class _ChatBotPageState extends State<ChatBotPage> {
                 );
               }
             },
+          );
+        case QuestionType.bankAccounts:
+          return BankAccountMultiSelectWidget(
+            question: message.systemQuestion!,
+            description: message.description,
+            options: message.bankAccountOptions ?? [],
+            onSubmit: (value) {},
           );
       }
     }

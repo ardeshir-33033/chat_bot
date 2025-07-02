@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:hesabo_chat_ai/di.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
@@ -11,7 +10,7 @@ import 'package:hesabo_chat_ai/features/core/theme/app_theme_helper.dart';
 class ChatBox extends StatefulWidget {
   final ChatBotMessage content;
 
-  const ChatBox({Key? key, required this.content}) : super(key: key);
+  const ChatBox({super.key, required this.content});
 
   @override
   State<ChatBox> createState() => ChatBoxState();

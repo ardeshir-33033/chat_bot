@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../presentation/widgets/bank_sms_multi_select_widget.dart';
 import '../questions_api_data.dart';
 import 'chat_bot_question_options.dart';
 
@@ -8,12 +9,14 @@ class ChatBotMessage {
   final int? order;
   final int? step;
   String? text;
+  String? description;
   final String systemName;
   String? userId;
   final String? systemQuestion;
   final DateTime? createdAt;
   bool fromAgent;
   List<ChatBotQuestionOptions>? options;
+  List<BankAccountOption>? bankAccountOptions;
   QuestionType? questionType;
 
   ChatBotMessage({
@@ -22,11 +25,13 @@ class ChatBotMessage {
     this.step,
     required this.systemName,
     this.text,
+    this.description,
     this.systemQuestion,
     this.userId,
     this.fromAgent = false,
     this.createdAt,
     this.options,
+    this.bankAccountOptions,
     this.questionType,
   });
 
@@ -82,7 +87,7 @@ class ChatBotMessage {
   }
 
   bool isQuestion() {
-    if (options != null) {
+    if (options != null || bankAccountOptions != null) {
       return true;
     } else {
       return false;

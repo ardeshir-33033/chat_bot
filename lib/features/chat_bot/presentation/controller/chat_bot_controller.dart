@@ -1,5 +1,6 @@
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:get/get.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/bank_account_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart'
     show ChatBotMessage;
 import 'package:hesabo_chat_ai/features/chat_bot/data/questions_api_data.dart';
@@ -16,8 +17,10 @@ import '../../data/models/chat_agent_models/chat_agent_request.dart';
 import '../../data/models/chatbot_answer_models/welcome_question_answer_model.dart';
 import '../../data/models/user_answer_model.dart';
 import '../../domain/usecase/post_agent_interaction_usecase.dart';
+import '../../domain/usecase/post_bank_account_usecase.dart';
 import '../../domain/usecase/post_person_expectation_usecase.dart';
 import '../../domain/usecase/post_user_response_usecase.dart';
+import '../widgets/bank_sms_multi_select_widget.dart';
 
 class ChatBotController extends GetxController {
   ChatBotController(
@@ -25,18 +28,21 @@ class ChatBotController extends GetxController {
     this._postUserResponseUseCase,
     this._postPersonExpectationUseCase,
     this._postAgentInteractionUseCase,
+    this._postBankAccountUseCase,
   );
 
   final GetWelcomeQuestionUseCase _getWelcomeQuestionUseCase;
   final PostUserResponseUseCase _postUserResponseUseCase;
   final PostPersonExpectationUseCase _postPersonExpectationUseCase;
   final PostAgentInteractionUseCase _postAgentInteractionUseCase;
+  final PostBankAccountUseCase _postBankAccountUseCase;
 
   late ItemScrollController itemScrollController;
   late ItemPositionsListener itemPositionsListener;
 
   List<ChatBotMessage> chatBotMessages = [];
   late final Map<String, AnswerProcessor> answerProcessors;
+  List<BankSmsModel> foundBanks = [];
 
   int userId = 1;
   int systemId = 0;
@@ -94,16 +100,27 @@ class ChatBotController extends GetxController {
     print(res);
   }
 
-  addMessages(String message, {bool fromUser = true, bool fromAgent = false}) {
-    ChatBotMessage chatBotMessage = ChatBotMessage(
-      id: getRandomNumber(),
-      text: fromUser ? message : null,
-      systemQuestion: fromUser ? null : message,
-      systemName: message,
-      userId: fromUser ? userId.toString() : systemId.toString(),
-      fromAgent: fromAgent,
-      createdAt: DateTime.now(),
-    );
+  addMessages(
+    String message, {
+    bool fromUser = true,
+    bool fromAgent = false,
+    ChatBotMessage? chatMessage,
+  }) {
+    late ChatBotMessage chatBotMessage;
+    if (chatMessage == null) {
+      chatBotMessage = ChatBotMessage(
+        id: getRandomNumber(),
+        text: fromUser ? message : null,
+        systemQuestion: fromUser ? null : message,
+        systemName: message,
+        userId: fromUser ? userId.toString() : systemId.toString(),
+        fromAgent: fromAgent,
+        createdAt: DateTime.now(),
+      );
+    } else {
+      chatBotMessage = chatMessage;
+    }
+
     chatBotMessages.add(chatBotMessage);
     scrollToLastMessage();
     update();
@@ -224,12 +241,118 @@ class ChatBotController extends GetxController {
           bankName!,
           sms.body ?? '',
         );
-        lastSms.add(parsed);
+        if (parsed.error == null) {
+          lastSms.add(parsed);
+        }
         print('Latest SMS from $bankName: ${parsed.toString()}');
         processedBanks.add(bankName!);
       }
     }
+    foundBanks = lastSms;
     print(lastSms);
+  }
+
+  getBankAccountOptions() {
+    List<BankAccountOption> options = [];
+
+    for (var element in foundBanks) {
+      final option = createBankAccountOptionFromSms(
+        element,
+        QuestionsApiData().banks,
+      );
+      if (option != null) options.add(option);
+    }
+    print(options);
+    addMessages(
+      "",
+      chatMessage: ChatBotMessage(
+        id: getRandomNumber(),
+        text: null,
+        description:
+            'از روی پیامک های بانکیت، بانک ها با موحودی هاشون پیدا و ثبت شدن. میتونی انتخاب کنی که کدوم بانک ها توی اپ نمایش داده بشن و یا اگر موجودی هاشون مشکل داره ویرایش کنی!',
+        systemQuestion: "همه چی خوب پیش رفت",
+        systemName: QuestionType.bankAccounts.toString(),
+        userId: systemId.toString(),
+        fromAgent: false,
+        createdAt: DateTime.now(),
+        bankAccountOptions: options,
+        questionType: QuestionType.bankAccounts,
+      ),
+    );
+  }
+
+  BankAccountOption? createBankAccountOptionFromSms(
+    BankSmsModel smsModel,
+    List<Map<String, dynamic>> banksData,
+  ) {
+    if (smsModel.bankName == null) {
+      return null; // Cannot match if bankName is null
+    }
+
+    // Normalize the SMS bank name for better matching
+    final normalizedSmsBankName = smsModel.bankName!
+        .trim()
+        .toLowerCase()
+        .replaceAll('بانک', '')
+        .trim();
+
+    // Find a matching bank
+    Map<String, dynamic>? matchedBank;
+
+    // First, try exact match or close match after normalization
+    for (var bank in banksData) {
+      final normalizedBankName = bank['bank_name']
+          .trim()
+          .toLowerCase()
+          .replaceAll('ایران', '')
+          .replaceAll('بانک', '')
+          .trim();
+
+      if (normalizedSmsBankName == normalizedBankName) {
+        matchedBank = bank;
+        break;
+      }
+      // More flexible matching: check if SMS bank name contains part of the bank name
+      if (normalizedSmsBankName.contains(normalizedBankName) ||
+          normalizedBankName.contains(normalizedSmsBankName)) {
+        matchedBank = bank;
+        break;
+      }
+    }
+
+    // If no good match yet, try a broader search using keywords
+    if (matchedBank == null) {
+      for (var bank in banksData) {
+        final bankName = bank['bank_name'].trim().toLowerCase();
+        if (bankName.contains(normalizedSmsBankName) ||
+            normalizedSmsBankName.contains(bankName)) {
+          matchedBank = bank;
+          break;
+        }
+      }
+    }
+
+    if (matchedBank != null) {
+      return BankAccountOption(
+        label: matchedBank['bank_name'] as String,
+        svgAsset: matchedBank['logo'] as String,
+        initialValue: smsModel.balance.toString(),
+        bankId: matchedBank['id'] as int,
+        accountNumber: smsModel.accountNumber,
+        cardNumber: smsModel.cardNumber,
+      );
+    } else {
+      // If no match is found, you might want to return null or a default/unknown option
+      print("No matching bank found for SMS bank name: ${smsModel.bankName}");
+      return null;
+    }
+  }
+
+  postBankAccount(List<BankAccountOption> bankAccounts) async {
+    for (var element in bankAccounts) {
+      BankAccount(personId: userId, bankId: element.bankId, balance: double.parse(element.initialValue), accountNumber: element.);
+      final res = await _postBankAccountUseCase(params: element);
+    }
   }
 
   increaseStep() {
@@ -286,6 +409,7 @@ class ChatBotController extends GetxController {
 
   resetData() {
     chatBotMessages = [];
+    foundBanks = [];
     currentOrder = 1;
     currentStep = 1;
     itemScrollController = ItemScrollController();

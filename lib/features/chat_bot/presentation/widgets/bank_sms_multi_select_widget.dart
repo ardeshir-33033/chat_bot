@@ -10,12 +10,18 @@ class BankAccountOption {
   final String svgAsset;
   final String initialValue;
   final int bankId;
+  String? accountNumber;
+  String? cardNumber;
+  String? sheba;
 
   BankAccountOption({
     required this.label,
     required this.svgAsset,
     required this.initialValue,
     required this.bankId,
+    this.accountNumber,
+    this.cardNumber,
+    this.sheba,
   });
 }
 

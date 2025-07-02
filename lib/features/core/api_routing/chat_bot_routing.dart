@@ -8,5 +8,6 @@ class ChatBotRouting {
   static String postUserResponse = "${baseRouting}user_responses/";
   static String postPersonExpectation = "${baseRouting}person_expectations/";
   static String postAgentInteraction = "${baseAgentRouting}interact/";
+  static String postBankAccount = "${baseRouting}bank_accounts/";
   // "${baseRouting}user_responses";
 }
