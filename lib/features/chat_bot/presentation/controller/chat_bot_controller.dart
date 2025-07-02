@@ -350,8 +350,14 @@ class ChatBotController extends GetxController {
 
   postBankAccount(List<BankAccountOption> bankAccounts) async {
     for (var element in bankAccounts) {
-      BankAccount(personId: userId, bankId: element.bankId, balance: double.parse(element.initialValue), accountNumber: element.);
-      final res = await _postBankAccountUseCase(params: element);
+      final bankAccount = BankAccount(
+        personId: userId,
+        bankId: element.bankId,
+        balance: double.parse(element.initialValue),
+        accountNumber: element.accountNumber,
+        cardNumber: element.cardNumber,
+      );
+      final res = await _postBankAccountUseCase(params: bankAccount);
     }
   }
 
