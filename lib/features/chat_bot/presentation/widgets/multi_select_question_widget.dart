@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_question_options.dart';
 
+import '../../../core/components/chat_bot_button.dart';
+
 class MultiSelectQuestionWidget extends StatefulWidget {
   final String question;
   final String? description;
@@ -98,18 +100,22 @@ class _MultiSelectQuestionWidgetState extends State<MultiSelectQuestionWidget> {
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF23244A),
-                      side: BorderSide(color: Colors.purpleAccent),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
+                  child: ChatBotButton(
+                    variant: ButtonVariant.outlined,
+                    color: Color(0xFF23244A),
+                    borderSide: BorderSide(color: Colors.purpleAccent),
                     onPressed: selected.isNotEmpty
-                        ? () => widget.onSubmit(selected)
+                        ? () async => widget.onSubmit(selected)
                         : null,
-                    child: Text('ادامه', style: TextStyle(color: Colors.white)),
+                    title: 'ادامه',
+                    titleStyle: TextStyle(color: Colors.white),
+                    // style: ElevatedButton.styleFrom(
+                    //   backgroundColor: Color(0xFF23244A),
+                    //   side: BorderSide(color: Colors.purpleAccent),
+                    //   shape: RoundedRectangleBorder(
+                    //     borderRadius: BorderRadius.circular(16),
+                    //   ),
+                    // ),
                   ),
                 ),
               ],

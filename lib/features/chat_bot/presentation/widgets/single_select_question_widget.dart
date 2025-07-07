@@ -6,7 +6,7 @@ class SingleSelectQuestionWidget extends StatelessWidget {
   final String question;
   final String? description;
   final List<ChatBotQuestionOptions> options;
-  final void Function(String) onSelected;
+  final void Function(ChatBotQuestionOptions) onSelected;
 
   const SingleSelectQuestionWidget({
     Key? key,
@@ -40,12 +40,12 @@ class SingleSelectQuestionWidget extends StatelessWidget {
               child: Column(
                 children: List.generate(options.length, (index) {
                   return InkWell(
-                    onTap: () => onSelected(options[index].id.toString()),
+                    onTap: () => onSelected(options[index]),
                     borderRadius: index == 0
                         ? BorderRadius.vertical(top: Radius.circular(12))
                         : index == options.length - 1
-                            ? BorderRadius.vertical(bottom: Radius.circular(12))
-                            : BorderRadius.zero,
+                        ? BorderRadius.vertical(bottom: Radius.circular(12))
+                        : BorderRadius.zero,
                     child: Container(
                       width: double.infinity,
                       padding: EdgeInsets.symmetric(
@@ -56,9 +56,8 @@ class SingleSelectQuestionWidget extends StatelessWidget {
                         borderRadius: index == 0
                             ? BorderRadius.vertical(top: Radius.circular(12))
                             : index == options.length - 1
-                                ? BorderRadius.vertical(
-                                    bottom: Radius.circular(12))
-                                : BorderRadius.zero,
+                            ? BorderRadius.vertical(bottom: Radius.circular(12))
+                            : BorderRadius.zero,
                         color: Colors.transparent,
                       ),
                       child: Row(

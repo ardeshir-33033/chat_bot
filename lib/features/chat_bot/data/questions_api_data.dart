@@ -5,17 +5,17 @@ class QuestionsApiData {
   static List<int> stepsTotalOrders = [6, 4, 2];
 
   QuestionType getQuestionTypeFromSystemName(String systemName) {
-    const yesNoNames = {'has_fix_income', 'has_expense_categories'};
+    const yesNoNames = {
+      'has_fix_income',
+      'has_expense_categories',
+      "sms_bank_permission",
+    };
     const multiSelectNames = {
       "user_goal",
       "fix_income_type",
       "most_recent_categories",
-      "debt",
     };
-    const singleSelectNames = {
-      "most_expense_categories",
-      "sms_bank_permission",
-    };
+    const singleSelectNames = {"most_expense_categories", "debt"};
     const textNames = {"income_amount"};
     const selectAndTypeNames = {"fix_income_list", "expense_categories"};
 
@@ -121,6 +121,11 @@ class QuestionsApiData {
       "id": 23,
       "bank_name": "صنعت و معدن",
       "logo": "assets/images/banks/sanat-madan-bank-logo--10707.svg",
+    },
+    {
+      "id": 24,
+      "bank_name": "رسالت",
+      "logo": "assets/images/banks/resalat-bank-logo--10705.svg",
     },
   ];
 }

@@ -6,6 +6,7 @@ import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
 
 import '../data_source/chat_data_source.dart';
 import '../models/chat_agent_models/chat_agent_request.dart';
+import '../models/sms_transaction_model.dart';
 import '../models/user_answer_model.dart';
 
 class ChatBotRepositoryImpl extends ChatBotRepository {
@@ -94,7 +95,7 @@ class ChatBotRepositoryImpl extends ChatBotRepository {
   @override
   Future<DataState<BankAccount>> postBankAccount({
     required BankAccount bankAccount,
-  })async{
+  }) async {
     try {
       final response = await _chatDataSource.postBankAccount(
         bankAccount: bankAccount,
@@ -104,6 +105,19 @@ class ChatBotRepositoryImpl extends ChatBotRepository {
     } on Exception catch (e) {
       return DataFailed(e.toString());
     }
+  }
 
+  @override
+  Future<DataState<void>> postSmsTransactionBatch({
+    required List<SmsTransactionModel> smsTransactionModel,
+  }) async {
+    try {
+      final response = await _chatDataSource.postSmsTransactionBatch(
+        smsTransactionModel: smsTransactionModel,
+      );
+      return DataSuccess(response.data);
+    } on Exception catch (e) {
+      return DataFailed(e.toString());
+    }
   }
 }

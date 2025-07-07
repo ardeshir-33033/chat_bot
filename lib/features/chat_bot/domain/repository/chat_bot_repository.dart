@@ -5,6 +5,7 @@ import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
 import '../../data/models/bank_account_model.dart';
 import '../../data/models/chat_agent_models/chat_agent_request.dart';
 import '../../data/models/chatbot_answer_models/person_expectation_model.dart';
+import '../../data/models/sms_transaction_model.dart';
 
 abstract class ChatBotRepository {
   Future<DataState<ChatBotMessage>> getWelcomeQuestion({
@@ -27,5 +28,9 @@ abstract class ChatBotRepository {
 
   Future<DataState<BankAccount>> postBankAccount({
     required BankAccount bankAccount,
+  });
+
+  Future<DataState<void>> postSmsTransactionBatch({
+    required List<SmsTransactionModel> smsTransactionModel,
   });
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:get/get.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/bank_account_model.dart';
@@ -10,15 +11,19 @@ import 'package:hesabo_chat_ai/features/core/utils/utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+import '../../../core/components/loading_overlay_manager.dart';
 import '../../../core/data/bank_numbers.dart';
 import '../../../core/data/bank_parsers.dart';
 import '../../../core/data/bank_sms_model.dart';
 import '../../data/models/chat_agent_models/chat_agent_request.dart';
+import '../../data/models/chatbot_answer_models/person_expectation_model.dart';
 import '../../data/models/chatbot_answer_models/welcome_question_answer_model.dart';
+import '../../data/models/sms_transaction_model.dart';
 import '../../data/models/user_answer_model.dart';
 import '../../domain/usecase/post_agent_interaction_usecase.dart';
 import '../../domain/usecase/post_bank_account_usecase.dart';
 import '../../domain/usecase/post_person_expectation_usecase.dart';
+import '../../domain/usecase/post_sms_transaction_batch_usecase.dart';
 import '../../domain/usecase/post_user_response_usecase.dart';
 import '../widgets/bank_sms_multi_select_widget.dart';
 
@@ -29,6 +34,7 @@ class ChatBotController extends GetxController {
     this._postPersonExpectationUseCase,
     this._postAgentInteractionUseCase,
     this._postBankAccountUseCase,
+    this._postSmsTransactionBatchUseCase,
   );
 
   final GetWelcomeQuestionUseCase _getWelcomeQuestionUseCase;
@@ -36,6 +42,7 @@ class ChatBotController extends GetxController {
   final PostPersonExpectationUseCase _postPersonExpectationUseCase;
   final PostAgentInteractionUseCase _postAgentInteractionUseCase;
   final PostBankAccountUseCase _postBankAccountUseCase;
+  final PostSmsTransactionBatchUseCase _postSmsTransactionBatchUseCase;
 
   late ItemScrollController itemScrollController;
   late ItemPositionsListener itemPositionsListener;
@@ -60,10 +67,10 @@ class ChatBotController extends GetxController {
     answerProcessors = {
       "fix_income_type": welcomingQuestionsAnswer,
       // "has_expense_categories": processExpenseCategoriesAnswer,
-      // "debt": processDebtAnswer,
+      "debt": processHasDebt,
       "user_goal": welcomingQuestionsAnswer,
       "income_amount": postPersonExpectation,
-      // "sms_bank_permission": smsPermission,
+      "sms_bank_permission": processSmsPermission,
       "has_fix_income": welcomingQuestionsAnswer,
 
       // "fix_income_list": fixIncomeExpense,
@@ -192,6 +199,33 @@ class ChatBotController extends GetxController {
         );
         print(messages);
       }
+    }
+  }
+
+  Future<bool> processHasDebt(dynamic model) async {
+    model = model as WelcomeQuestionAnswerModel;
+    final answer = model.selectedOptionIds!.first;
+    if ((answer) != 10) {
+      await postPersonExpectation(
+        PersonExpectationModel(personId: userId, hasDebt: true),
+      );
+    } else {
+      await postPersonExpectation(
+        PersonExpectationModel(personId: userId, hasDebt: false),
+      );
+    }
+    final response = await welcomingQuestionsAnswer(model);
+    return response;
+  }
+
+  Future<bool> processSmsPermission(dynamic answer) async {
+    answer = answer as bool;
+    if (answer) {
+      await processLastBankSms();
+      await getBankAccountOptions();
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -348,7 +382,50 @@ class ChatBotController extends GetxController {
     }
   }
 
-  postBankAccount(List<BankAccountOption> bankAccounts) async {
+  sendBanksAndSmsData(
+    BuildContext context, {
+    required List<BankAccountOption> bankAccounts,
+  }) async {
+    try {
+      List<BankAccount> bankAccountsDetails = await postBankAccount(
+        bankAccounts,
+      );
+      List<SmsTransactionModel> smsTransactionModel = [];
+
+      for (var element in bankAccountsDetails) {
+        smsTransactionModel.add(
+          SmsTransactionModel(
+            amount: element.balance,
+            personId: userId,
+            bankAccountId: element.id,
+            fromSms: false,
+          ),
+        );
+      }
+
+      final response = await postSmsTransactionBatch(smsTransactionModel);
+      if (response) {
+        double totalBalance = 0;
+        smsTransactionModel.forEach((element) {
+          totalBalance += element.amount ?? 0;
+        });
+        transformQuestionToMessage(chatBotMessages.length - 1, [
+          "مجموع کل موجودی بانک های شما$totalBalance﷼ است",
+        ]);
+        increaseOrder();
+        getWelcomeQuestion();
+      }
+
+      print(response);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<List<BankAccount>> postBankAccount(
+    List<BankAccountOption> bankAccounts,
+  ) async {
+    List<BankAccount> bankAccountList = [];
     for (var element in bankAccounts) {
       final bankAccount = BankAccount(
         personId: userId,
@@ -357,7 +434,28 @@ class ChatBotController extends GetxController {
         accountNumber: element.accountNumber,
         cardNumber: element.cardNumber,
       );
-      final res = await _postBankAccountUseCase(params: bankAccount);
+      try {
+        final res = await _postBankAccountUseCase(params: bankAccount);
+        if (res is DataSuccess<BankAccount>) {
+          bankAccountList.add(res.data);
+        } else {
+          print(res);
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
+    return bankAccountList;
+  }
+
+  postSmsTransactionBatch(List<SmsTransactionModel> smsTransactionModel) async {
+    final response = await _postSmsTransactionBatchUseCase(
+      params: smsTransactionModel,
+    );
+    if (response is DataSuccess) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -370,7 +468,7 @@ class ChatBotController extends GetxController {
   }
 
   increaseOrder() {
-    if (QuestionsApiData.stepsTotalOrders[currentOrder - 1] == currentOrder) {
+    if (QuestionsApiData.stepsTotalOrders[currentStep - 1] == currentOrder) {
       currentOrder = 1;
       increaseStep();
     } else {

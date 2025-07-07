@@ -29,7 +29,7 @@ class BankAccountMultiSelectWidget extends StatefulWidget {
   final String question;
   final String? description;
   final List<BankAccountOption> options;
-  final void Function(List<Map<String, String>>) onSubmit;
+  final void Function(List<BankAccountOption>) onSubmit;
 
   const BankAccountMultiSelectWidget({
     Key? key,
@@ -48,6 +48,14 @@ class _BankAccountMultiSelectWidgetState
     extends State<BankAccountMultiSelectWidget> {
   final Map<int, bool> selected = {};
   final Map<int, TextEditingController> controllers = {};
+
+  @override
+  void initState() {
+    selected.addAll({
+      for (var o in widget.options) widget.options.indexOf(o): true,
+    });
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -175,20 +183,20 @@ class _BankAccountMultiSelectWidgetState
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                onPressed: selected.values.any((v) => v)
-                    ? () {
-                        final result = <Map<String, String>>[];
-                        selected.forEach((i, isChecked) {
-                          if (isChecked) {
-                            result.add({
-                              'label': widget.options[i].label,
-                              'value': controllers[i]?.text ?? '',
-                            });
-                          }
-                        });
-                        widget.onSubmit(result);
-                      }
-                    : null,
+                onPressed: () {
+                  final result = widget.options
+                      .where((o) => selected[widget.options.indexOf(o)]!)
+                      .toList();
+                  widget.onSubmit(result);
+                },
+                // selected.values.any((v) => v)
+                //     ? () {
+                //         final result = widget.options
+                //             .where((o) => selected[widget.options.indexOf(o)]!)
+                //             .toList();
+                //         widget.onSubmit(result);
+                //       }
+                //     : null,
                 child: Text('ادامه', style: TextStyle(color: Colors.white)),
               ),
             ),

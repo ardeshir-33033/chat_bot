@@ -14,6 +14,7 @@ import '../models/bank_account_model.dart';
 import '../models/chat_agent_models/chat_agent_request.dart';
 import '../models/chat_bot_message.dart';
 import '../models/chatbot_answer_models/person_expectation_model.dart';
+import '../models/sms_transaction_model.dart';
 import '../models/user_answer_model.dart';
 
 abstract class ChatDataSource {
@@ -37,6 +38,10 @@ abstract class ChatDataSource {
 
   Future<HttpResponse<BankAccount>> postBankAccount({
     required BankAccount bankAccount,
+  });
+
+  Future<HttpResponse<void>> postSmsTransactionBatch({
+    required List<SmsTransactionModel> smsTransactionModel,
   });
 }
 
@@ -186,7 +191,7 @@ class ChatDataSourceImpl extends ChatDataSource {
     };
     var dio = Dio();
     var response = await dio.request(
-      ChatBotRouting.postPersonExpectation,
+      ChatBotRouting.postBankAccount,
       options: Options(method: 'POST', headers: headers),
       data: jsonEncode(bankAccount.toJson()),
     );
@@ -195,6 +200,35 @@ class ChatDataSourceImpl extends ChatDataSource {
       final data = BankAccount.fromJson(response.data);
 
       HttpResponse<BankAccount> voidResponse = HttpResponse(data, response);
+
+      return voidResponse;
+    } else {
+      throw Exception(response.toString());
+    }
+  }
+
+  @override
+  Future<HttpResponse<void>> postSmsTransactionBatch({
+    required List<SmsTransactionModel> smsTransactionModel,
+  }) async {
+    var headers = {
+      'Cookie':
+          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86',
+    };
+    var dio = Dio();
+    final List<Map<String, dynamic>> transactionJsonList =
+    smsTransactionModel.map((transaction) => transaction.toJson()).toList();
+    final Map<String, dynamic> requestBody = {
+      "transactions": transactionJsonList,
+    };
+    var response = await dio.request(
+      ChatBotRouting.postSmsTransactionBatch,
+      options: Options(method: 'POST', headers: headers),
+      data: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      HttpResponse<void> voidResponse = HttpResponse(null, response);
 
       return voidResponse;
     } else {
