@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' as intl;
 
 extension NullableStringEx on String? {
   bool isNullOrEmpty() {
@@ -29,6 +30,53 @@ extension IntegerExtensions on int {
     ];
 
     return colors[lastDigit];
+  }
+}
+
+extension FarsiNumberParsing on String {
+  int farsiToInt() {
+    final westernNumber = replaceAll('۰', '0')
+        .replaceAll('۱', '1')
+        .replaceAll('۲', '2')
+        .replaceAll('۳', '3')
+        .replaceAll('۴', '4')
+        .replaceAll('۵', '5')
+        .replaceAll('۶', '6')
+        .replaceAll('۷', '7')
+        .replaceAll('۸', '8')
+        .replaceAll('۹', '9')
+        .replaceAll(RegExp(r'[^0-9]'), '');
+
+    return int.parse(westernNumber);
+  }
+}
+
+
+extension IntRialFormatter on int {
+  String toRialFormatted({bool usePersianDigits = true}) {
+    final formatter = intl.NumberFormat.currency(
+      locale: 'en_US',
+      symbol: '',
+      decimalDigits: 0,
+    );
+
+    String formattedAmount = formatter.format(this);
+
+    if (usePersianDigits) {
+      formattedAmount = formattedAmount
+          .replaceAll('0', '۰')
+          .replaceAll('1', '۱')
+          .replaceAll('2', '۲')
+          .replaceAll('3', '۳')
+          .replaceAll('4', '۴')
+          .replaceAll('5', '۵')
+          .replaceAll('6', '۶')
+          .replaceAll('7', '۷')
+          .replaceAll('8', '۸')
+          .replaceAll('9', '۹');
+    }
+
+    return '$formattedAmount ریال';
   }
 }
 
@@ -143,7 +191,6 @@ extension ListEx<T> on Iterable<T> {
   }
 }
 
-
 extension DateTimeHourFormatting on DateTime {
   /// Formats the DateTime to an hour string in 24-hour format (00-23).
   /// Example: "14"
@@ -217,8 +264,9 @@ extension StringEx on String {
   }
 
   String toDatetime() {
-    return DateFormat('MMMM dd yyyy – hh:mm a')
-        .format(DateTime.fromMillisecondsSinceEpoch(int.parse(this)));
+    return DateFormat(
+      'MMMM dd yyyy – hh:mm a',
+    ).format(DateTime.fromMillisecondsSinceEpoch(int.parse(this)));
   }
 
   String hourAmFromDate() {
@@ -254,24 +302,20 @@ extension Unique<E, Id> on List<E> {
 extension PasswordValidator on String {
   bool isValidPassword() {
     return RegExp(
-        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?!.*[*(),.?:{}|<>]).{8,}$')
-        .hasMatch(this);
+      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?!.*[*(),.?:{}|<>]).{8,}$',
+    ).hasMatch(this);
   }
 }
 
 extension UsernameValidator on String {
   bool isValidUsername() {
-    return RegExp(
-        r'^(?!.*[!@#$%^&*(),.?:{}|<>]).{3,}$')
-        .hasMatch(this);
+    return RegExp(r'^(?!.*[!@#$%^&*(),.?:{}|<>]).{3,}$').hasMatch(this);
   }
 }
 
 extension CodeValidator on String {
   bool isCodeValidator() {
-    return RegExp(
-        r'^.{6}$')
-        .hasMatch(this);
+    return RegExp(r'^.{6}$').hasMatch(this);
   }
 }
 

@@ -2,11 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:get/get.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/bank_account_model.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_answer_options.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart'
     show ChatBotMessage;
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/income_expense_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/questions_api_data.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/domain/usecase/get_welcome_question_usecase.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/domain/usecase/post_fix_income_expense_usecase.dart';
 import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
+import 'package:hesabo_chat_ai/features/core/extensions/extensions.dart';
 import 'package:hesabo_chat_ai/features/core/utils/utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -35,6 +39,7 @@ class ChatBotController extends GetxController {
     this._postAgentInteractionUseCase,
     this._postBankAccountUseCase,
     this._postSmsTransactionBatchUseCase,
+    this._postFixIncomeExpenseUseCase,
   );
 
   final GetWelcomeQuestionUseCase _getWelcomeQuestionUseCase;
@@ -43,6 +48,7 @@ class ChatBotController extends GetxController {
   final PostAgentInteractionUseCase _postAgentInteractionUseCase;
   final PostBankAccountUseCase _postBankAccountUseCase;
   final PostSmsTransactionBatchUseCase _postSmsTransactionBatchUseCase;
+  final PostFixIncomeExpenseUseCase _postFixIncomeExpenseUseCase;
 
   late ItemScrollController itemScrollController;
   late ItemPositionsListener itemPositionsListener;
@@ -55,7 +61,7 @@ class ChatBotController extends GetxController {
   int systemId = 0;
 
   int currentOrder = 1;
-  int currentStep = 1;
+  int currentStep = 2;
 
   int threadId = 184100;
   String currentUser = "4";
@@ -405,12 +411,16 @@ class ChatBotController extends GetxController {
 
       final response = await postSmsTransactionBatch(smsTransactionModel);
       if (response) {
+        print("postSmsTransactionBatch successful");
+
         double totalBalance = 0;
         smsTransactionModel.forEach((element) {
           totalBalance += element.amount ?? 0;
         });
+        String balance = totalBalance.toInt().toRialFormatted();
+
         transformQuestionToMessage(chatBotMessages.length - 1, [
-          "مجموع کل موجودی بانک های شما$totalBalance﷼ است",
+          " مجموع کل موجودی بانک های شما$balance است",
         ]);
         increaseOrder();
         getWelcomeQuestion();
@@ -420,6 +430,16 @@ class ChatBotController extends GetxController {
     } catch (e) {
       print(e);
     }
+  }
+
+  sendFixExpensesIncomeData(List<IncomeExpenseModel> expenses) async {
+    List<Future<bool>> futures = [];
+
+    for (var element in expenses) {
+      futures.add(postFixIncomeExpenses(element));
+    }
+
+    await Future.wait(futures);
   }
 
   Future<List<BankAccount>> postBankAccount(
@@ -476,19 +496,45 @@ class ChatBotController extends GetxController {
     }
   }
 
-  scrollToLastMessage() {
+  scrollToLastMessage() async {
     if (chatBotMessages.length > 2) {
+      final lastIndex = chatBotMessages.length - 1;
+
       itemScrollController.scrollTo(
-        index: chatBotMessages.length,
-        duration: Duration(milliseconds: 500),
+        index: lastIndex,
+        duration: const Duration(milliseconds: 100),
+        alignment: 0.0,
+      );
+
+      await Future.delayed(const Duration(milliseconds: 120));
+
+      itemScrollController.scrollTo(
+        index: lastIndex,
+        duration: const Duration(milliseconds: 300),
+        alignment: 0.0,
       );
     }
   }
 
   transformQuestionToMessage(int index, List<String> answers) {
     chatBotMessages[index].options = null;
+    chatBotMessages[index].bankAccountOptions = null;
     chatBotMessages[index].text = answers.join('\n');
     update();
+  }
+
+  // transformSelectAndTypeQuestionsToMessage(int index, List<ChatBotAnswerOptions> options){
+  //
+  //   chatBotMessages[index].options = null;
+  //
+  // }
+  Future<bool> postFixIncomeExpenses(dynamic fixIncomeExpense) async {
+    final res = await _postFixIncomeExpenseUseCase(params: fixIncomeExpense);
+    if (res is DataSuccess) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future<bool> postPersonExpectation(dynamic personExpectation) async {

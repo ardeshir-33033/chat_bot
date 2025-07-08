@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:hesabo_chat_ai/di.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chatbot_answer_models/person_expectation_model.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/income_expense_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/questions_api_data.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/answer_box.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/chat_bot_meta_data_widgets.dart';
@@ -24,6 +25,7 @@ import 'package:hesabo_chat_ai/features/core/data/melli_parser.dart';
 import 'package:hesabo_chat_ai/features/core/data/pasargad_parser.dart';
 import 'package:hesabo_chat_ai/features/core/data/resalat_parser.dart';
 import 'package:hesabo_chat_ai/features/core/data/saderat_parser.dart';
+import 'package:hesabo_chat_ai/features/core/extensions/extensions.dart';
 import 'package:hesabo_chat_ai/features/core/theme/constants.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 // import 'package:serious_python/serious_python.dart';
@@ -284,15 +286,11 @@ class _ChatBotPageState extends State<ChatBotPage> {
           );
         case QuestionType.selectAndType:
           return SelectAndTypeQuestionWidget(
+            messageIndex: index,
             question: message.systemQuestion!,
             options: message.options!,
-            onSubmit: (value) {
-              if (value.isEmpty) return;
-
-              // dynamic model = prepareAnswerData(
-              //   message,
-              //   value.map((element) => element.id).toList(),
-              // );
+            onSubmit: () async {
+              await prepareAnswerData(message, null);
               // controller.sendResponse(
               //   QuestionType.selectAndType,
               //   questionId: message.id,
@@ -325,7 +323,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
             onAnswered: (value) async {
               dynamic model = await prepareAnswerData(message, value);
 
-              if (message.systemQuestion! != "sms_bank_permission") {
+              if (message.systemName != "sms_bank_permission") {
                 bool val = await controller.handleAnswer(message, model);
                 if (val) {
                   controller.transformQuestionToMessage(
@@ -341,8 +339,11 @@ class _ChatBotPageState extends State<ChatBotPage> {
             question: message.systemQuestion!,
             description: message.description,
             options: message.bankAccountOptions ?? [],
-            onSubmit: (value) {
-              controller.sendBanksAndSmsData(context, bankAccounts: value);
+            onSubmit: (value) async {
+              await controller.sendBanksAndSmsData(
+                context,
+                bankAccounts: value,
+              );
             },
           );
       }
@@ -352,6 +353,12 @@ class _ChatBotPageState extends State<ChatBotPage> {
   dynamic prepareAnswerData(ChatBotMessage message, dynamic rawAnswer) async {
     switch (message.systemName) {
       case "has_fix_income":
+        return WelcomeQuestionAnswerModel(
+          questionId: message.id,
+          selectedOptionIds: rawAnswer
+              ? [message.options!.first.id]
+              : [message.options![1].id],
+        );
       case "user_goal":
         return WelcomeQuestionAnswerModel(
           questionId: message.id,
@@ -379,18 +386,37 @@ class _ChatBotPageState extends State<ChatBotPage> {
 
       case "income_amount":
         return PersonExpectationModel(
-          avgIncome: int.parse(rawAnswer),
+          avgIncome: (rawAnswer as String).farsiToInt(),
           personId: controller.userId,
         );
 
       case "sms_bank_permission":
+        controller.transformQuestionToMessage(
+          controller.chatBotMessages.length - 1,
+          rawAnswer ? ["بله"] : ["خیر"],
+        );
         LoadingOverlayManager.show(context, message: 'در حال ارسال...');
         await controller.processSmsPermission(rawAnswer);
         LoadingOverlayManager.hide();
         return rawAnswer;
 
-      // case "fix_income_list":
-      //   return FixIncomeListModel(items: List<IncomeItem>.from(rawAnswer));
+      case "fix_income_list":
+        List<IncomeExpenseModel> expenses = [];
+        for (var element in message.chatBotAnswerOptions!) {
+          final index = message.options!.indexWhere(
+            (option) => element.id == option.id,
+          );
+          expenses.add(
+            IncomeExpenseModel(
+              title: message.options![index].optionText,
+              amount: double.parse(element.optionValue),
+              personId: controller.userId,
+            ),
+          );
+        }
+
+        await controller.sendFixExpensesIncomeData(expenses);
+      // return FixIncomeListModel(items: List<IncomeItem>.from(rawAnswer));
 
       default:
         return rawAnswer;

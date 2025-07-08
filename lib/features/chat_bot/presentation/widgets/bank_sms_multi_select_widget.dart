@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_utils/src/extensions/context_extensions.dart';
+import 'package:hesabo_chat_ai/features/core/components/chat_bot_button.dart';
+import 'package:hesabo_chat_ai/features/core/extensions/extensions.dart';
 import 'package:intl/intl.dart' as intl;
 
 import '../../data/models/chat_bot_question_options.dart';
@@ -103,7 +105,7 @@ class _BankAccountMultiSelectWidgetState
                   final option = widget.options[i];
                   final isChecked = selected[i] ?? true;
                   controllers[i] ??= TextEditingController(
-                    text: formatIntToRial(int.parse(option.initialValue)),
+                    text: int.parse(option.initialValue).toRialFormatted(),
                   );
                   return Column(
                     children: [
@@ -175,15 +177,11 @@ class _BankAccountMultiSelectWidgetState
             ),
             SizedBox(height: 16),
             Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF23244A),
-                  side: BorderSide(color: Colors.purpleAccent),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                onPressed: () {
+              child: ChatBotButton(
+                variant: ButtonVariant.elevated,
+                color: Color(0xFF23244A),
+                borderSide: BorderSide(color: Colors.purpleAccent),
+                onPressed: () async {
                   final result = widget.options
                       .where((o) => selected[widget.options.indexOf(o)]!)
                       .toList();
@@ -197,30 +195,13 @@ class _BankAccountMultiSelectWidgetState
                 //         widget.onSubmit(result);
                 //       }
                 //     : null,
-                child: Text('ادامه', style: TextStyle(color: Colors.white)),
+                title: 'ادامه',
+                titleStyle: TextStyle(color: Colors.white),
               ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  String formatIntToRial(int amount) {
-    // Create a NumberFormat instance.
-    // 'en_US' locale is used to ensure standard thousands separators (e.g., 1,234,567).
-    // 'symbol: ""' prevents the formatter from adding any default currency symbol.
-    // 'decimalDigits: 0' ensures no decimal places are included, as Rial is typically whole.
-    final intl.NumberFormat formatter = intl.NumberFormat.currency(
-      locale: 'en_US',
-      symbol: '',
-      decimalDigits: 0,
-    );
-
-    // Format the integer amount using the created formatter.
-    final String formattedAmount = formatter.format(amount);
-
-    // Append the Persian word for Rial ("ریال") to the formatted amount.
-    return '$formattedAmount ریال';
   }
 }

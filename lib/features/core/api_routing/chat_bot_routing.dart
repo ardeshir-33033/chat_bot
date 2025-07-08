@@ -10,4 +10,5 @@ class ChatBotRouting {
   static String postAgentInteraction = "${baseAgentRouting}interact/";
   static String postBankAccount = "${baseRouting}bank_accounts/";
   static String postSmsTransactionBatch = "${baseRouting}transactions/batch/";
+  static String postFixIncomeExpense = "${baseRouting}fix_income_expenses/";
 }

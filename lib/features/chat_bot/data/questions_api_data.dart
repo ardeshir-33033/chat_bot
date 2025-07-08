@@ -2,7 +2,7 @@ typedef AnswerProcessor = Future<bool> Function(dynamic answer);
 
 class QuestionsApiData {
   static int totalSteps = 3;
-  static List<int> stepsTotalOrders = [6, 4, 2];
+  static List<int> stepsTotalOrders = [5, 3, 1];
 
   QuestionType getQuestionTypeFromSystemName(String systemName) {
     const yesNoNames = {

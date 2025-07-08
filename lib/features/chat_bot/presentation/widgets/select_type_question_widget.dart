@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:get/utils.dart';
+import 'package:hesabo_chat_ai/di.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_answer_options.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_question_options.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/presentation/controller/chat_bot_controller.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/question_title_widget.dart';
+import 'package:hesabo_chat_ai/features/core/components/chat_bot_button.dart';
 
 class SelectAndTypeQuestionWidget extends StatefulWidget {
   final String question;
   final String? description;
   final List<ChatBotQuestionOptions> options;
-  final void Function(List<Map<String, String>>) onSubmit;
+  final int messageIndex;
+  final void Function() onSubmit;
 
   const SelectAndTypeQuestionWidget({
     Key? key,
     required this.question,
     this.description,
+    required this.messageIndex,
     required this.options,
     required this.onSubmit,
   }) : super(key: key);
@@ -75,20 +82,26 @@ class _SelectAndTypeQuestionWidgetState
                           children: [
                             Text(
                               option.optionText,
-                              style: TextStyle(color: Colors.white),
+                              style: context.textTheme.titleSmall!.copyWith(
+                                color: Colors.white,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                             Spacer(),
-                            AnimatedContainer(
-                              duration: Duration(milliseconds: 200),
-                              width: 200,
+                            SizedBox(
+                              width: 100,
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
                                 child: TextField(
                                   controller: controllers[i],
-                                  style: TextStyle(color: Colors.white),
+                                  style: context.textTheme.bodyMedium!.copyWith(
+                                    color: Color(0xFF228ACA),
+                                  ),
+                                  textAlign: TextAlign.center,
                                   decoration: InputDecoration(
                                     hintText: 'مبلغ به ریال',
-                                    hintStyle: TextStyle(color: Colors.white54),
+                                    hintStyle: context.textTheme.bodyMedium!
+                                        .copyWith(color: Color(0xFF228ACA)),
                                     filled: true,
                                     fillColor: Color(0xFF181A2A),
                                     border: OutlineInputBorder(
@@ -129,30 +142,38 @@ class _SelectAndTypeQuestionWidgetState
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF23244A),
-                      side: BorderSide(color: Colors.purpleAccent),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
+                  child: ChatBotButton(
+                    variant: ButtonVariant.elevated,
+                    color: Color(0xFF23244A),
+                    borderSide: BorderSide(color: Colors.purpleAccent),
+                    title: 'ادامه',
                     onPressed: selected.values.any((v) => v)
-                        ? () {
-                            final result = <Map<String, String>>[];
+                        ? () async {
+                            ChatBotController chatBotController =
+                                locator<ChatBotController>();
+                            chatBotController
+                                    .chatBotMessages[widget.messageIndex]
+                                    .chatBotAnswerOptions =
+                                [];
                             selected.forEach((i, isChecked) {
                               if (isChecked) {
                                 final option = widget.options[i];
-                                result.add({
-                                  'label': option.optionText,
-                                  'value': (controllers[i]?.text ?? ''),
-                                });
+
+                                chatBotController
+                                    .chatBotMessages[widget.messageIndex]
+                                    .chatBotAnswerOptions!
+                                    .add(
+                                      ChatBotAnswerOptions(
+                                        id: option.id,
+                                        optionValue: controllers[i]!.text,
+                                        optionText: option.optionText,
+                                      ),
+                                    );
                               }
                             });
-                            widget.onSubmit(result);
+                            widget.onSubmit();
                           }
                         : null,
-                    child: Text('ادامه', style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ],

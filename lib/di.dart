@@ -11,6 +11,7 @@ import 'features/chat_bot/data/data_source/chat_data_source.dart';
 import 'features/chat_bot/data/repository_impl/chat_bot_repository_impl.dart';
 import 'features/chat_bot/domain/repository/chat_bot_repository.dart';
 import 'features/chat_bot/domain/usecase/get_welcome_question_usecase.dart';
+import 'features/chat_bot/domain/usecase/post_fix_income_expense_usecase.dart';
 
 GetIt locator = GetIt.instance;
 
@@ -26,6 +27,7 @@ void controllerInjection() {
   locator.registerSingleton<ChatBotController>(
     Get.put(
       ChatBotController(
+        locator(),
         locator(),
         locator(),
         locator(),
@@ -57,6 +59,9 @@ void useCaseInjection() {
   );
   locator.registerLazySingleton<PostSmsTransactionBatchUseCase>(
     () => PostSmsTransactionBatchUseCase(locator()),
+  );
+  locator.registerLazySingleton<PostFixIncomeExpenseUseCase>(
+    () => PostFixIncomeExpenseUseCase(locator()),
   );
 }
 

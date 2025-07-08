@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../presentation/widgets/bank_sms_multi_select_widget.dart';
 import '../questions_api_data.dart';
+import 'chat_bot_answer_options.dart';
 import 'chat_bot_question_options.dart';
 
 class ChatBotMessage {
@@ -17,6 +18,7 @@ class ChatBotMessage {
   bool fromAgent;
   List<ChatBotQuestionOptions>? options;
   List<BankAccountOption>? bankAccountOptions;
+  List<ChatBotAnswerOptions>? chatBotAnswerOptions;
   QuestionType? questionType;
 
   ChatBotMessage({
@@ -32,6 +34,7 @@ class ChatBotMessage {
     this.createdAt,
     this.options,
     this.bankAccountOptions,
+    this.chatBotAnswerOptions,
     this.questionType,
   });
 
@@ -87,6 +90,13 @@ class ChatBotMessage {
   }
 
   bool isQuestion() {
+    if (systemName == "fix_income_list") {
+      if (chatBotAnswerOptions == null) {
+        return true;
+      } else {
+        return false;
+      }
+    }
     if (options != null || bankAccountOptions != null) {
       return true;
     } else {
