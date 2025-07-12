@@ -2,6 +2,7 @@ import 'package:hesabo_chat_ai/features/chat_bot/data/models/bank_account_model.
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chatbot_answer_models/person_expectation_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/income_expense_model.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/most_expense_category_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/domain/repository/chat_bot_repository.dart';
 import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
 
@@ -129,6 +130,20 @@ class ChatBotRepositoryImpl extends ChatBotRepository {
     try {
       final response = await _chatDataSource.postFixIncomeExpense(
         incomeExpenseModel: incomeExpenseModel,
+      );
+      return DataSuccess(response.data);
+    } on Exception catch (e) {
+      return DataFailed(e.toString());
+    }
+  }
+
+  @override
+  Future<DataState<void>> postMostExpenseCategory({
+    required MostExpenseCategoryModel mostExpenseCategoryModel,
+  }) async {
+    try {
+      final response = await _chatDataSource.postMostExpenseCategory(
+        mostExpenseCategoryModel: mostExpenseCategoryModel,
       );
       return DataSuccess(response.data);
     } on Exception catch (e) {

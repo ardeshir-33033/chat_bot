@@ -97,6 +97,11 @@ Future<void> copyToClipboard(String text) async {
   // );
 }
 
+bool isValidIranianPhoneNumber(String phone) {
+  final pattern = RegExp(r'^09\d{9}$');
+  return pattern.hasMatch(phone);
+}
+
 Future<void> launchExternalUrl(
   String url, {
   Function(dynamic)? onError,

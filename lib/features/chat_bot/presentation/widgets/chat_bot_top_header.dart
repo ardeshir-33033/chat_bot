@@ -31,47 +31,47 @@ class _ChatBotTopHeaderState extends State<ChatBotTopHeader> {
           ),
         ),
         // Assistant Icon
-        Positioned(
-          top: 80,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [Colors.purpleAccent, Colors.black],
-                  center: Alignment.center,
-                  radius: 0.8,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.purpleAccent.withOpacity(0.6),
-                    blurRadius: 30,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.black,
-                  ),
-                  child: Icon(
-                    Icons.blur_on,
-                    color: Colors.purpleAccent,
-                    size: 40,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+        // Positioned(
+        //   top: 80,
+        //   left: 0,
+        //   right: 0,
+        //   child: Center(
+        //     child: Container(
+        //       width: 100,
+        //       height: 100,
+        //       decoration: BoxDecoration(
+        //         shape: BoxShape.circle,
+        //         gradient: RadialGradient(
+        //           colors: [Colors.purpleAccent, Colors.black],
+        //           center: Alignment.center,
+        //           radius: 0.8,
+        //         ),
+        //         boxShadow: [
+        //           BoxShadow(
+        //             color: Colors.purpleAccent.withOpacity(0.6),
+        //             blurRadius: 30,
+        //             spreadRadius: 5,
+        //           ),
+        //         ],
+        //       ),
+        //       child: Center(
+        //         child: Container(
+        //           width: 60,
+        //           height: 60,
+        //           decoration: BoxDecoration(
+        //             shape: BoxShape.circle,
+        //             color: Colors.black,
+        //           ),
+        //           child: Icon(
+        //             Icons.blur_on,
+        //             color: Colors.purpleAccent,
+        //             size: 40,
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

@@ -1,21 +1,25 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:get/get.dart';
+import 'package:hesabo_chat_ai/features/auth/data/models/most_expense_data.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/bank_account_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_answer_options.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart'
     show ChatBotMessage;
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_question_options.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/income_expense_model.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/most_expense_category_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/questions_api_data.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/domain/usecase/get_welcome_question_usecase.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/domain/usecase/post_fix_income_expense_usecase.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/domain/usecase/post_most_expense_category_usecase.dart';
 import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
 import 'package:hesabo_chat_ai/features/core/extensions/extensions.dart';
 import 'package:hesabo_chat_ai/features/core/utils/utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-
-import '../../../core/components/loading_overlay_manager.dart';
 import '../../../core/data/bank_numbers.dart';
 import '../../../core/data/bank_parsers.dart';
 import '../../../core/data/bank_sms_model.dart';
@@ -40,6 +44,7 @@ class ChatBotController extends GetxController {
     this._postBankAccountUseCase,
     this._postSmsTransactionBatchUseCase,
     this._postFixIncomeExpenseUseCase,
+    this._postMostExpenseCategoryUseCase,
   );
 
   final GetWelcomeQuestionUseCase _getWelcomeQuestionUseCase;
@@ -49,6 +54,7 @@ class ChatBotController extends GetxController {
   final PostBankAccountUseCase _postBankAccountUseCase;
   final PostSmsTransactionBatchUseCase _postSmsTransactionBatchUseCase;
   final PostFixIncomeExpenseUseCase _postFixIncomeExpenseUseCase;
+  final PostMostExpenseCategoryUseCase _postMostExpenseCategoryUseCase;
 
   late ItemScrollController itemScrollController;
   late ItemPositionsListener itemPositionsListener;
@@ -61,7 +67,7 @@ class ChatBotController extends GetxController {
   int systemId = 0;
 
   int currentOrder = 1;
-  int currentStep = 2;
+  int currentStep = 1;
 
   int threadId = 184100;
   String currentUser = "4";
@@ -78,6 +84,7 @@ class ChatBotController extends GetxController {
       "income_amount": postPersonExpectation,
       "sms_bank_permission": processSmsPermission,
       "has_fix_income": welcomingQuestionsAnswer,
+      "most_recent_categories": welcomingQuestionsAnswer,
 
       // "fix_income_list": fixIncomeExpense,
     };
@@ -98,19 +105,28 @@ class ChatBotController extends GetxController {
   }
 
   Future getWelcomeQuestion() async {
-    final res = await _getWelcomeQuestionUseCase.call(
-      params: GetWelcomeQuestionsParams(step: currentStep, order: currentOrder),
-    );
-    if (res is DataSuccess<ChatBotMessage>) {
-      res.data.userId = userId.toString();
-      chatBotMessages.add(res.data);
+    if (currentStep != 3) {
+      final res = await _getWelcomeQuestionUseCase.call(
+        params: GetWelcomeQuestionsParams(
+          step: currentStep,
+          order: currentOrder,
+        ),
+      );
+      if (res is DataSuccess<ChatBotMessage>) {
+        if (res.data.systemName == "most_expense_categories") {
+          List<ChatBotQuestionOptions> options = addMostExpenseCategory();
+          res.data.options = options;
+        }
+        res.data.userId = userId.toString();
+        chatBotMessages.add(res.data);
 
-      update();
-      scrollToLastMessage();
-    } else {
+        update();
+        scrollToLastMessage();
+      } else {
+        print(res);
+      }
       print(res);
     }
-    print(res);
   }
 
   addMessages(
@@ -523,11 +539,35 @@ class ChatBotController extends GetxController {
     update();
   }
 
+  transformSelectAndTypeQuestionsToMessage(
+    int index,
+    List<ChatBotAnswerOptions> options,
+  ) {
+    chatBotMessages[index].chatBotAnswerOptions = options;
+    chatBotMessages[index].bankAccountOptions = null;
+    chatBotMessages[index].text = null;
+    update();
+  }
+
   // transformSelectAndTypeQuestionsToMessage(int index, List<ChatBotAnswerOptions> options){
   //
   //   chatBotMessages[index].options = null;
   //
   // }
+
+  Future<bool> postMostExpenseCategory(
+    MostExpenseCategoryModel mostExpenseCategories,
+  ) async {
+    final res = await _postMostExpenseCategoryUseCase(
+      params: mostExpenseCategories,
+    );
+    if (res is DataSuccess) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<bool> postFixIncomeExpenses(dynamic fixIncomeExpense) async {
     final res = await _postFixIncomeExpenseUseCase(params: fixIncomeExpense);
     if (res is DataSuccess) {
@@ -555,6 +595,19 @@ class ChatBotController extends GetxController {
     } else {
       return false;
     }
+  }
+
+  List<ChatBotQuestionOptions> addMostExpenseCategory() {
+    ExpenseCategoryList ls = ExpenseCategoryList.fromJson(
+      jsonDecode(MostExpenseData().list),
+    );
+    return ls.categories.map((option) {
+      return ChatBotQuestionOptions(
+        id: option.id,
+        welcomeQuestionId: 1,
+        optionText: option.title,
+      );
+    }).toList();
   }
 
   resetData() {

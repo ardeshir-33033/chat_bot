@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hesabo_chat_ai/di.dart';
+import 'package:hesabo_chat_ai/features/auth/presentation/auth_selection_page.dart';
 import 'package:hesabo_chat_ai/features/core/theme/material_scheme_utils.dart';
 import 'package:hesabo_chat_ai/features/core/theme/theme_service.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
       ).data,
       // theme: Themes.light,
       // darkTheme: Themes.dark,
-      home: const ChatBotPage(),
+      home: const AuthSelectionPage(),
     );
   }
 }

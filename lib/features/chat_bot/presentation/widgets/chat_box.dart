@@ -139,22 +139,45 @@ class ChatBoxState extends State<ChatBox> {
                                 ),
                               ),
                             if (!widget.content.fromAgent)
-                              ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth:
-                                      MediaQuery.of(context).size.width * 0.7,
-                                ),
-                                child: Text(
-                                  isMine
-                                      ? widget.content.text!
-                                      : widget.content.systemQuestion!,
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
+                              if (widget.content.chatBotAnswerOptions !=
+                                  null) ...[
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width * 0.7,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        widget.content.systemQuestion!,
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      createUiForChatAnswerOptions(),
+                                    ],
                                   ),
                                 ),
-                              ),
+                              ] else if (widget.content.chatBotAnswerOptions ==
+                                  null)
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth:
+                                        MediaQuery.of(context).size.width * 0.7,
+                                  ),
+                                  child: Text(
+                                    isMine
+                                        ? widget.content.text!
+                                        : widget.content.systemQuestion!,
+                                    textAlign: TextAlign.right,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
                             SizedBox(height: 8),
                             Text(
                               widget.content.createdAt!.toHourMinute24(),
@@ -174,6 +197,34 @@ class ChatBoxState extends State<ChatBox> {
           );
         },
       ),
+    );
+  }
+
+  Widget createUiForChatAnswerOptions() {
+    return Column(
+      children:
+          widget.content.chatBotAnswerOptions?.map((option) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(option.optionValue),
+                    ),
+                  ),
+                  Spacer(),
+                  Text(option.optionText),
+                ],
+              ),
+            );
+          }).toList() ??
+          [],
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/income_expense_model.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/most_expense_category_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/user_answer_model.dart';
 import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
 
@@ -37,5 +38,9 @@ abstract class ChatBotRepository {
 
   Future<DataState<void>> postFixIncomeExpense({
     required IncomeExpenseModel incomeExpenseModel,
+  });
+
+  Future<DataState<void>> postMostExpenseCategory({
+    required MostExpenseCategoryModel mostExpenseCategoryModel,
   });
 }

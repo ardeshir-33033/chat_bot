@@ -4,9 +4,11 @@ import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hesabo_chat_ai/di.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_answer_options.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chatbot_answer_models/person_expectation_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/income_expense_model.dart';
+import 'package:hesabo_chat_ai/features/chat_bot/data/models/most_expense_category_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/questions_api_data.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/answer_box.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/chat_bot_meta_data_widgets.dart';
@@ -99,8 +101,8 @@ class _ChatBotPageState extends State<ChatBotPage> {
             body: SafeArea(
               child: Column(
                 children: [
-                  SizedBox(height: 200, child: ChatBotTopHeader()),
-                  ChatBotMetaDataWidgets(),
+                  SizedBox(height: 80, child: ChatBotTopHeader()),
+                  // ChatBotMetaDataWidgets(),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -166,7 +168,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
                                     // You'll need to create and manage this controller
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 16,
+                                      fontSize: 14,
                                     ),
                                     textInputAction: TextInputAction.send,
                                     onSubmitted: (value) {
@@ -180,7 +182,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
                                           'متن مورد نظر خود را تایپ کنید...',
                                       hintStyle: TextStyle(
                                         color: Colors.white70,
-                                        fontSize: 16,
+                                        fontSize: 14,
                                       ),
                                       hintTextDirection: TextDirection.rtl,
                                       contentPadding: EdgeInsets.symmetric(
@@ -399,13 +401,32 @@ class _ChatBotPageState extends State<ChatBotPage> {
         await controller.processSmsPermission(rawAnswer);
         LoadingOverlayManager.hide();
         return rawAnswer;
-
+      case "most_expense_categories":
+        final result = (rawAnswer as ChatBotQuestionOptions).id;
+        await controller.postMostExpenseCategory(
+          MostExpenseCategoryModel(
+            personId: controller.userId,
+            expenseCategoryId: result,
+          ),
+        );
+        controller.transformQuestionToMessage(
+          controller.chatBotMessages.length - 1,
+          [rawAnswer.optionText],
+        );
+        controller.increaseOrder();
+        controller.getWelcomeQuestion();
+      case "most_recent_categories":
+        return WelcomeQuestionAnswerModel(
+          questionId: message.id,
+          selectedOptionIds: rawAnswer,
+        );
       case "fix_income_list":
         List<IncomeExpenseModel> expenses = [];
         for (var element in message.chatBotAnswerOptions!) {
           final index = message.options!.indexWhere(
             (option) => element.id == option.id,
           );
+          if (index == -1) continue;
           expenses.add(
             IncomeExpenseModel(
               title: message.options![index].optionText,
@@ -416,6 +437,20 @@ class _ChatBotPageState extends State<ChatBotPage> {
         }
 
         await controller.sendFixExpensesIncomeData(expenses);
+        await controller.transformSelectAndTypeQuestionsToMessage(
+          controller.chatBotMessages.length - 1,
+          expenses
+              .map(
+                (element) => ChatBotAnswerOptions(
+                  id: element.personId!,
+                  optionValue: element.amount!.toInt().toString(),
+                  optionText: element.title!,
+                ),
+              )
+              .toList(),
+        );
+        controller.increaseOrder();
+        controller.getWelcomeQuestion();
       // return FixIncomeListModel(items: List<IncomeItem>.from(rawAnswer));
 
       default:
