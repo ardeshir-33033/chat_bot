@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hesabo_chat_ai/features/core/components/skeleton_widget.dart';
+import 'package:hesabo_chat_ai/core/components/skeleton_widget.dart';
 
 enum ImageType { asset, file, network }
 

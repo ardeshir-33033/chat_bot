@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hesabo_chat_ai/core/components/loading_overlay_manager.dart';
 import 'package:hesabo_chat_ai/di.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_answer_options.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
@@ -18,21 +19,20 @@ import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/multi_sele
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/select_type_question_widget.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/single_select_question_widget.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/yes_no_question_widget.dart';
-import 'package:hesabo_chat_ai/features/core/components/app_header_bar.dart';
-import 'package:hesabo_chat_ai/features/core/components/icon_widget.dart';
-import 'package:hesabo_chat_ai/features/core/data/ayandeh_parser.dart';
-import 'package:hesabo_chat_ai/features/core/data/blu_parser.dart';
-import 'package:hesabo_chat_ai/features/core/data/maskan_parser.dart';
-import 'package:hesabo_chat_ai/features/core/data/melli_parser.dart';
-import 'package:hesabo_chat_ai/features/core/data/pasargad_parser.dart';
-import 'package:hesabo_chat_ai/features/core/data/resalat_parser.dart';
-import 'package:hesabo_chat_ai/features/core/data/saderat_parser.dart';
-import 'package:hesabo_chat_ai/features/core/extensions/extensions.dart';
-import 'package:hesabo_chat_ai/features/core/theme/constants.dart';
+import 'package:hesabo_chat_ai/core/components/app_header_bar.dart';
+import 'package:hesabo_chat_ai/core/components/icon_widget.dart';
+import 'package:hesabo_chat_ai/core/data/ayandeh_parser.dart';
+import 'package:hesabo_chat_ai/core/data/blu_parser.dart';
+import 'package:hesabo_chat_ai/core/data/maskan_parser.dart';
+import 'package:hesabo_chat_ai/core/data/melli_parser.dart';
+import 'package:hesabo_chat_ai/core/data/pasargad_parser.dart';
+import 'package:hesabo_chat_ai/core/data/resalat_parser.dart';
+import 'package:hesabo_chat_ai/core/data/saderat_parser.dart';
+import 'package:hesabo_chat_ai/core/extensions/extensions.dart';
+import 'package:hesabo_chat_ai/core/theme/constants.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 // import 'package:serious_python/serious_python.dart';
 
-import '../../../core/components/loading_overlay_manager.dart';
 import '../../data/models/chat_bot_question_options.dart';
 import '../../data/models/chatbot_answer_models/welcome_question_answer_model.dart';
 import '../controller/chat_bot_controller.dart';
@@ -426,7 +426,8 @@ class _ChatBotPageState extends State<ChatBotPage> {
           final index = message.options!.indexWhere(
             (option) => element.id == option.id,
           );
-          if (index == -1) continue;
+          if (index == -1) return;
+          if (element.optionValue.isEmpty) return;
           expenses.add(
             IncomeExpenseModel(
               title: message.options![index].optionText,

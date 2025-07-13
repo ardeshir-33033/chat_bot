@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:hesabo_chat_ai/di.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/controller/chat_bot_controller.dart';
-import 'package:hesabo_chat_ai/features/core/extensions/extensions.dart';
-import 'package:hesabo_chat_ai/features/core/theme/app_theme_helper.dart';
+import 'package:hesabo_chat_ai/core/extensions/extensions.dart';
+import 'package:hesabo_chat_ai/core/theme/app_theme_helper.dart';
 
 class AnswerBox extends StatefulWidget {
   final ChatBotMessage content;

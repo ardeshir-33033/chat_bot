@@ -1,4 +1,5 @@
-import 'package:hesabo_chat_ai/features/core/env/environment.dart';
+
+import 'package:hesabo_chat_ai/core/env/environment.dart';
 
 class ChatBotRouting {
   static String baseRouting = "${Environment.getBaseUrl()}chatbot/coreapi/";

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hesabo_chat_ai/di.dart';
+import 'package:hesabo_chat_ai/features/auth/presentation/controller/auth_controller.dart';
+import 'package:hesabo_chat_ai/features/auth/presentation/pages/auth_selection_page.dart';
 
 class ChatBotTopHeader extends StatefulWidget {
   const ChatBotTopHeader({super.key});
@@ -12,7 +15,7 @@ class _ChatBotTopHeaderState extends State<ChatBotTopHeader> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -26,7 +29,19 @@ class _ChatBotTopHeaderState extends State<ChatBotTopHeader> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Icon(Icons.headset_mic, color: Colors.white, size: 32),
+              InkWell(
+                onTap: () {
+                  locator<AuthController>().logout();
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AuthSelectionPage(),
+                    ),
+                  );
+                },
+                child: Icon(Icons.logout, color: Colors.white, size: 32),
+              ),
             ],
           ),
         ),

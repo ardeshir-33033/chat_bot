@@ -60,48 +60,48 @@ class _ChatBotMetaDataWidgetsState extends State<ChatBotMetaDataWidgets> {
             ),
           ),
         ),
-        SizedBox(height: 20),
-        TextField(
-          controller: currentUserIdController,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
-          textDirection: TextDirection.rtl,
-          keyboardType: TextInputType.number,
-          onChanged: (value) {
-            controller.currentUser = value;
-          },
-          decoration: InputDecoration(
-            hintText: 'User Id',
-            hintStyle: const TextStyle(color: Colors.white70, fontSize: 16),
-
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-            filled: true,
-            fillColor: const Color(0xFF23244A),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(
-                color: Colors.purpleAccent,
-                width: 2,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(
-                color: Colors.purpleAccent,
-                width: 2,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(
-                color: Colors.purpleAccent,
-                width: 2,
-              ),
-            ),
-          ),
-        ),
+        // SizedBox(height: 20),
+        // TextField(
+        //   controller: currentUserIdController,
+        //   style: const TextStyle(color: Colors.white, fontSize: 16),
+        //   textDirection: TextDirection.rtl,
+        //   keyboardType: TextInputType.number,
+        //   onChanged: (value) {
+        //     controller.currentUser = value;
+        //   },
+        //   decoration: InputDecoration(
+        //     hintText: 'User Id',
+        //     hintStyle: const TextStyle(color: Colors.white70, fontSize: 16),
+        //
+        //     contentPadding: const EdgeInsets.symmetric(
+        //       horizontal: 16,
+        //       vertical: 12,
+        //     ),
+        //     filled: true,
+        //     fillColor: const Color(0xFF23244A),
+        //     border: OutlineInputBorder(
+        //       borderRadius: BorderRadius.circular(20),
+        //       borderSide: const BorderSide(
+        //         color: Colors.purpleAccent,
+        //         width: 2,
+        //       ),
+        //     ),
+        //     enabledBorder: OutlineInputBorder(
+        //       borderRadius: BorderRadius.circular(20),
+        //       borderSide: const BorderSide(
+        //         color: Colors.purpleAccent,
+        //         width: 2,
+        //       ),
+        //     ),
+        //     focusedBorder: OutlineInputBorder(
+        //       borderRadius: BorderRadius.circular(20),
+        //       borderSide: const BorderSide(
+        //         color: Colors.purpleAccent,
+        //         width: 2,
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

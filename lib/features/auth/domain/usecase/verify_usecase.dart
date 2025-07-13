@@ -3,23 +3,23 @@ import 'package:hesabo_chat_ai/features/auth/data/models/auth_tokens_model.dart'
 import 'package:hesabo_chat_ai/features/auth/domain/repository/auth_repository.dart';
 import 'package:hesabo_chat_ai/core/data/data_state.dart';
 
-class LoginUseCase implements UseCase<DataState<AuthTokens>, LoginParams> {
+class VerifyUseCase implements UseCase<DataState<AuthTokens>, VerifyParams> {
   final AuthRepository _authRepository;
 
-  LoginUseCase(this._authRepository);
+  VerifyUseCase(this._authRepository);
 
   @override
-  Future<DataState<AuthTokens>> call({required LoginParams params}) {
-    return _authRepository.login(
+  Future<DataState<AuthTokens>> call({required VerifyParams params}) {
+    return _authRepository.verify(
       phoneNumber: params.phoneNumber,
-      password: params.password,
+      code: params.code,
     );
   }
 }
 
-class LoginParams {
+class VerifyParams {
   final String phoneNumber;
-  final String password;
+  final String code;
 
-  LoginParams({required this.phoneNumber, required this.password});
+  VerifyParams({required this.phoneNumber, required this.code});
 }

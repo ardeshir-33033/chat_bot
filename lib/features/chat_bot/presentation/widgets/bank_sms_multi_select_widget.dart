@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_utils/src/extensions/context_extensions.dart';
-import 'package:hesabo_chat_ai/features/core/components/chat_bot_button.dart';
-import 'package:hesabo_chat_ai/features/core/extensions/extensions.dart';
+import 'package:hesabo_chat_ai/core/components/chat_bot_button.dart';
+import 'package:hesabo_chat_ai/core/extensions/extensions.dart';
 import 'package:intl/intl.dart' as intl;
 
 import '../../data/models/chat_bot_question_options.dart';

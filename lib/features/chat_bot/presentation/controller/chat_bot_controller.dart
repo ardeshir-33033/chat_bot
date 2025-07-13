@@ -3,6 +3,11 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:get/get.dart';
+import 'package:hesabo_chat_ai/core/data/auth_data_controller.dart';
+import 'package:hesabo_chat_ai/core/data/bank_numbers.dart';
+import 'package:hesabo_chat_ai/core/data/bank_parsers.dart';
+import 'package:hesabo_chat_ai/core/data/bank_sms_model.dart';
+import 'package:hesabo_chat_ai/di.dart';
 import 'package:hesabo_chat_ai/features/auth/data/models/most_expense_data.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/bank_account_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_answer_options.dart';
@@ -15,14 +20,12 @@ import 'package:hesabo_chat_ai/features/chat_bot/data/questions_api_data.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/domain/usecase/get_welcome_question_usecase.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/domain/usecase/post_fix_income_expense_usecase.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/domain/usecase/post_most_expense_category_usecase.dart';
-import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
-import 'package:hesabo_chat_ai/features/core/extensions/extensions.dart';
-import 'package:hesabo_chat_ai/features/core/utils/utils.dart';
+import 'package:hesabo_chat_ai/core/data/data_state.dart';
+import 'package:hesabo_chat_ai/core/extensions/extensions.dart';
+import 'package:hesabo_chat_ai/core/utils/utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import '../../../core/data/bank_numbers.dart';
-import '../../../core/data/bank_parsers.dart';
-import '../../../core/data/bank_sms_model.dart';
+
 import '../../data/models/chat_agent_models/chat_agent_request.dart';
 import '../../data/models/chatbot_answer_models/person_expectation_model.dart';
 import '../../data/models/chatbot_answer_models/welcome_question_answer_model.dart';
@@ -70,7 +73,6 @@ class ChatBotController extends GetxController {
   int currentStep = 1;
 
   int threadId = 184100;
-  String currentUser = "4";
 
   @override
   void onInit() {
@@ -180,7 +182,7 @@ class ChatBotController extends GetxController {
         messages: [ChatAgentMessage(content: text, role: 'user')],
         threadId: threadId,
         stream: false,
-        currentUser: currentUser,
+        currentUser: locator<AuthDataController>().userId.toString(),
       ),
     );
 

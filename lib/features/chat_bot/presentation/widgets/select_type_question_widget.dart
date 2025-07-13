@@ -5,7 +5,7 @@ import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_answer_opt
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_question_options.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/controller/chat_bot_controller.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/presentation/widgets/question_title_widget.dart';
-import 'package:hesabo_chat_ai/features/core/components/chat_bot_button.dart';
+import 'package:hesabo_chat_ai/core/components/chat_bot_button.dart';
 
 class SelectAndTypeQuestionWidget extends StatefulWidget {
   final String question;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hesabo_chat_ai/features/core/theme/material_scheme_utils.dart';
+import 'package:hesabo_chat_ai/core/theme/material_scheme_utils.dart';
 import 'material_scheme.dart';
 
 class AppThemeProvider {

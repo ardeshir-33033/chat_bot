@@ -1,4 +1,4 @@
-import 'package:hesabo_chat_ai/features/core/utils/utils.dart';
+import 'package:hesabo_chat_ai/core/utils/utils.dart';
 
 import '../chat_bot_message.dart';
 

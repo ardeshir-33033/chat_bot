@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hesabo_chat_ai/features/core/components/push_down_animation.dart';
-import 'package:hesabo_chat_ai/features/core/components/switcher.dart';
-import 'package:hesabo_chat_ai/features/core/utils/color_helper.dart';
+import 'package:hesabo_chat_ai/core/components/push_down_animation.dart';
+import 'package:hesabo_chat_ai/core/components/switcher.dart';
+import 'package:hesabo_chat_ai/core/utils/color_helper.dart';
 import 'loading_widget.dart';
 
 enum ButtonType { primary, secondary, tertiary }

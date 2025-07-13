@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hesabo_chat_ai/core/components/chat_bot_button.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_question_options.dart';
-
-import '../../../core/components/chat_bot_button.dart';
 
 class MultiSelectQuestionWidget extends StatefulWidget {
   final String question;

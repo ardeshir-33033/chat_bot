@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:hesabo_chat_ai/features/core/theme/app_theme_helper.dart';
+import 'package:hesabo_chat_ai/core/theme/app_theme_helper.dart';
 import 'image_widget.dart';
 
 class IconWidget extends StatelessWidget {

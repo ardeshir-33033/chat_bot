@@ -4,13 +4,15 @@ import 'dart:convert';
 // import 'package:api_handler/feature/api_handler/data/models/query_model.dart';
 // import 'package:api_handler/feature/api_handler/presentation/presentation_usecase.dart';
 import 'package:dio/dio.dart';
+import 'package:hesabo_chat_ai/core/data/auth_data_controller.dart';
+import 'package:hesabo_chat_ai/di.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_agent_models/chat_agent_answer.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/income_expense_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/most_expense_category_model.dart';
-import 'package:hesabo_chat_ai/features/core/api_routing/chat_bot_routing.dart';
-import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
-import 'package:hesabo_chat_ai/features/core/data/http_response.dart';
-import 'package:hesabo_chat_ai/features/core/env/environment.dart';
+import 'package:hesabo_chat_ai/core/api_routing/chat_bot_routing.dart';
+import 'package:hesabo_chat_ai/core/data/data_state.dart';
+import 'package:hesabo_chat_ai/core/data/http_response.dart';
+import 'package:hesabo_chat_ai/core/env/environment.dart';
 
 import '../models/bank_account_model.dart';
 import '../models/chat_agent_models/chat_agent_request.dart';
@@ -67,6 +69,7 @@ class ChatDataSourceImpl extends ChatDataSource {
     var headers = {
       'Cookie':
           'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86',
+      'Authorization': locator<AuthDataController>().accessToken,
     };
     var dio = Dio();
     var response = await dio.request(
@@ -118,6 +121,7 @@ class ChatDataSourceImpl extends ChatDataSource {
       'Content-Type': 'application/json',
       'Cookie':
           'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90878D86',
+      'Authorization': locator<AuthDataController>().accessToken,
     };
     var dio = Dio();
     var response = await dio.request(
@@ -148,8 +152,10 @@ class ChatDataSourceImpl extends ChatDataSource {
     required UserAnswerModel userAnswerModel,
   }) async {
     var headers = {
+      'Content-Type': 'application/json',
       'Cookie':
-          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86',
+          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90878D86',
+      'Authorization': locator<AuthDataController>().accessToken,
     };
     var dio = Dio();
     var response = await dio.request(
@@ -172,8 +178,10 @@ class ChatDataSourceImpl extends ChatDataSource {
     required PersonExpectationModel personExpectationModel,
   }) async {
     var headers = {
+      'Content-Type': 'application/json',
       'Cookie':
-          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86',
+          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90878D86',
+      'Authorization': locator<AuthDataController>().accessToken,
     };
     var dio = Dio();
     var response = await dio.request(
@@ -196,8 +204,10 @@ class ChatDataSourceImpl extends ChatDataSource {
     required BankAccount bankAccount,
   }) async {
     var headers = {
+      'Content-Type': 'application/json',
       'Cookie':
-          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86',
+          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90878D86',
+      'Authorization': locator<AuthDataController>().accessToken,
     };
     var dio = Dio();
     var response = await dio.request(
@@ -222,8 +232,10 @@ class ChatDataSourceImpl extends ChatDataSource {
     required List<SmsTransactionModel> smsTransactionModel,
   }) async {
     var headers = {
+      'Content-Type': 'application/json',
       'Cookie':
-          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86',
+          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90878D86',
+      'Authorization': locator<AuthDataController>().accessToken,
     };
     var dio = Dio();
     final List<Map<String, dynamic>> transactionJsonList = smsTransactionModel
@@ -252,8 +264,10 @@ class ChatDataSourceImpl extends ChatDataSource {
     required IncomeExpenseModel incomeExpenseModel,
   }) async {
     var headers = {
+      'Content-Type': 'application/json',
       'Cookie':
-          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86',
+          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90878D86',
+      'Authorization': locator<AuthDataController>().accessToken,
     };
     var dio = Dio();
 
@@ -277,8 +291,10 @@ class ChatDataSourceImpl extends ChatDataSource {
     required MostExpenseCategoryModel mostExpenseCategoryModel,
   }) async {
     var headers = {
+      'Content-Type': 'application/json',
       'Cookie':
-          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90848D86',
+          'FGTServer=735F07D05DD730BD20B9CB7403580EDF41EFE943506E7DBBA1F1FF7C0C6CBB1D2F9C7F90878D86',
+      'Authorization': locator<AuthDataController>().accessToken,
     };
     var dio = Dio();
     var response = await dio.request(

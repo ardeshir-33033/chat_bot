@@ -2,7 +2,7 @@ import 'package:hesabo_chat_ai/features/chat_bot/data/models/chat_bot_message.da
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/income_expense_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/most_expense_category_model.dart';
 import 'package:hesabo_chat_ai/features/chat_bot/data/models/user_answer_model.dart';
-import 'package:hesabo_chat_ai/features/core/data/data_state.dart';
+import 'package:hesabo_chat_ai/core/data/data_state.dart';
 
 import '../../data/models/bank_account_model.dart';
 import '../../data/models/chat_agent_models/chat_agent_request.dart';
